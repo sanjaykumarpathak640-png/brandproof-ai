@@ -1,0 +1,122 @@
+{
+  "samples": 42,
+  "true_positives": 38,
+  "false_positives": 0,
+  "false_negatives": 5,
+  "precision": 1.0,
+  "recall": 0.884,
+  "per_rule": {
+    "R-A11Y-01": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "R-CLM-01": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0
+    },
+    "R-CLM-02": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0
+    },
+    "R-CONF-01": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0
+    },
+    "R-MSG-01": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1
+    },
+    "R-PRC-01": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 1
+    },
+    "R-PRC-02": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 1
+    },
+    "R-PRC-03": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0
+    },
+    "R-SPEC-01": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 1
+    },
+    "R-TERM-01": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0
+    },
+    "R-TERM-02": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "R-VOICE-01": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 0
+    },
+    "R-VOICE-02": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0
+    },
+    "R-WAR-01": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 1
+    }
+  },
+  "mismatches": [
+    {
+      "text": "Buy SoundPods Pro for Rs. 7 thousand only.",
+      "expected": [
+        "R-PRC-01"
+      ],
+      "got": [],
+      "note": "price written in words"
+    },
+    {
+      "text": "Get fifty percent off on SoundPods Pro. T&C apply.",
+      "expected": [
+        "R-PRC-02"
+      ],
+      "got": [],
+      "note": "discount written in words"
+    },
+    {
+      "text": "SoundPods Pro – covered by warranty for life.",
+      "expected": [
+        "R-WAR-01"
+      ],
+      "got": [],
+      "note": "paraphrased warranty"
+    },
+    {
+      "text": "With SoundPods Pro, your battery never runs out.",
+      "expected": [
+        "R-SPEC-01"
+      ],
+      "got": [],
+      "note": "implied spec claim"
+    },
+    {
+      "text": "Better than Brand X earbuds, which break in a month.",
+      "expected": [
+        "R-MSG-01"
+      ],
+      "got": [],
+      "note": "competitor attack - needs AI"
+    }
+  ]
+}

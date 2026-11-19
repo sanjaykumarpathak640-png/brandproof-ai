@@ -189,3 +189,51 @@ table.t tr.click:hover td{background:#f8fafc}
 .colours div{font-size:11.5px;border:1px solid var(--line);border-radius:7px;padding:4px 7px;display:flex;gap:5px;align-items:center}
 .colours div.off{border-color:#f5c2c2;background:var(--highSoft)}
 footer{max-width:1240px;margin:0 auto;padding:10px 20px 40px;color:var(--muted);font-size:12.5px}
+
+/* ---------------- v3 additions */
+.ws{display:flex;align-items:center;gap:6px;min-width:0}
+.wsname{font-weight:600;font-size:13px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag.demo{background:#fef3c7;color:#92400e}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.ghost:hover{background:#f1f5f9;color:var(--ink)}
+.btn.big{padding:11px 18px;font-size:15px}
+.btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn:focus-visible,.inp:focus-visible,a:focus-visible,.hl:focus-visible,tr.click:focus-visible{outline:3px solid #a5b4fc;outline-offset:2px}
+.samples{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 12px;margin-bottom:14px}
+.nextstep{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#eef0ff;border:1px solid #c7cdfc;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.nextstep.me{background:var(--proofSoft);border-color:#bfe8d6}
+.fixbox.neutral{background:#f8fafc}
+.imgwrap{position:relative;display:inline-block;max-width:100%;line-height:0}
+.imgwrap img{max-width:100%;max-height:420px;border-radius:8px;border:1px solid var(--line);display:block}
+.obox{position:absolute;border:2px solid var(--rev);border-radius:4px;box-sizing:border-box;cursor:pointer}
+.obox.high{border-color:var(--high);background:#c6282818}
+.obox.medium{border-color:#e59a14;background:#e59a1418}
+.obox.review{border-color:var(--rev);background:#2563eb14}
+.obox.ok{border-color:#94a3b8;border-style:dashed;cursor:default}
+.obox.logo{border-color:var(--proof);cursor:default}
+.obox span{position:absolute;top:-18px;left:-2px;font-size:10.5px;line-height:16px;padding:0 5px;border-radius:4px;background:var(--ink);color:#fff;white-space:nowrap}
+.obox.high span{background:var(--high)}.obox.medium span{background:#b45309}.obox.logo span{background:var(--proof)}
+.logoimg{width:96px;height:96px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#fff;padding:6px}
+.editor{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.impact{margin-top:10px;border:1px solid #c7cdfc;background:#f7f8ff;border-radius:10px;padding:10px 12px}
+.authbox{max-width:520px;margin:30px auto}
+fieldset.choice{border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+fieldset.choice .chk{margin:6px 0}
+.chk.inline{display:inline-flex;margin-right:8px}
+.invite{padding:4px 0;border-bottom:1px solid #eef2f7;word-break:break-all}
+.guide{position:fixed;right:18px;bottom:18px;z-index:40;width:320px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(16,24,40,.18);padding:12px 14px;font-size:13px}
+.guide.closed{width:auto;padding:0;border:0;box-shadow:none;background:transparent}
+.guide ol{list-style:none;margin:8px 0;padding:0}
+.guide li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9}
+.guide li.done{color:var(--proof)}
+.gbar{height:6px;background:#eef2f7;border-radius:6px;overflow:hidden;margin-top:6px}.gbar i{display:block;height:100%;background:var(--proof)}
+.spin.dark{border-color:#cbd5e1;border-top-color:var(--brand);vertical-align:-2px;margin-right:6px}
+@media(max-width:960px){.guide{left:12px;right:12px;width:auto}.top .in{flex-wrap:wrap}.wsname{max-width:120px}}
+@media(min-width:961px){body.with-guide main,body.with-guide footer{padding-right:350px}}
+@media(min-width:1700px){body.with-guide main,body.with-guide footer{padding-right:20px}}
+[hidden]{display:none!important}
+.top .in{flex-wrap:wrap;row-gap:2px;padding-top:8px;padding-bottom:6px}
+.top nav.main{order:10;flex:1 1 100%;margin:0 -4px}
+.top .aipill{margin-left:auto}
+.rolebox select{max-width:230px}
+table.t td.mono,table.t td .mono{white-space:nowrap}

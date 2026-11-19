@@ -331,23 +331,26 @@ function renderGuide() {
   let el = $("#guide");
   const g = store.get("guide", null);
   if (!S.me || !S.me.demo || !g) { if (el) el.remove(); document.body.classList.remove("with-guide"); return; }
-  if (g.open === undefined) g.open = window.innerWidth > 960;
-  document.body.classList.toggle("with-guide", !!g.open);
-  if (!el) { el = document.createElement("aside"); el.id = "guide"; el.setAttribute("aria-label", "Demo guide"); document.body.appendChild(el); }
+  const inSide = window.innerWidth >= 1100;
+  if (g.open === undefined || (inSide && g.open === false && g.side === undefined)) g.open = window.innerWidth > 960;
+  document.body.classList.toggle("with-guide", !!g.open && !inSide);
+  if (!el) { el = document.createElement("aside"); el.id = "guide"; el.setAttribute("aria-label", "Demo guide"); }
+  const host = inSide ? $(".top .in") : document.body;
+  if (el.parentNode !== host) host.appendChild(el);
   const done = GUIDE.filter((s) => g.done[s.id]).length;
-  el.className = "guide" + (g.open ? "" : " closed");
-  el.innerHTML = g.open ? `<div class="row between"><b>Demo guide · ${done}/${GUIDE.length}</b><button class="btn sm ghost" id="g-min" aria-label="Minimise guide">–</button></div>
+  el.className = "guide" + (inSide ? " inside" : "") + (g.open ? "" : " closed");
+  el.innerHTML = g.open ? `<div class="row between"><b>Judge path · ${done}/${GUIDE.length}</b><button class="btn sm ghost" id="g-min" aria-label="Minimise guide">–</button></div>
     <div class="gbar"><i style="width:${(100 * done) / GUIDE.length}%"></i></div>
     <ol>${GUIDE.map((s) => `<li class="${g.done[s.id] ? "done" : ""}"><span>${g.done[s.id] ? "✓" : "○"} ${esc(s.t)}${s.opt ? ' <span class="muted tiny">(if needed)</span>' : ""}</span>${g.done[s.id] ? "" : `<button class="btn sm" data-g="${s.id}">Go</button>`}</li>`).join("")}</ol>
     <div class="tiny muted">Everything happens in your private sandbox.</div>`
-    : `<button class="btn sm pri" id="g-open">Demo guide · ${done}/${GUIDE.length}</button>`;
+    : `<button class="btn sm pri" id="g-open">Judge path · ${done}/${GUIDE.length}</button>`;
   const mn = $("#g-min"); if (mn) mn.onclick = () => { g.open = false; store.set("guide", g); renderGuide(); };
   const op = $("#g-open"); if (op) op.onclick = () => { g.open = true; store.set("guide", g); renderGuide(); };
   $$("[data-g]", el).forEach((b) => (b.onclick = () => GUIDE.find((s) => s.id === b.dataset.g).go()));
 }
 
 /* ---------------------------------------------------------------- router & boot */
-const PUBLIC = { "": landing, signin: signinPage, signup: signupPage, join: joinPage, trust: trustPage };
+const PUBLIC = { "": landing, signin: signinPage, signup: signupPage, join: joinPage, trust: trustPage, how: howPage };
 const PRIVATE = { home, check, queue, brand: brandPage, insights: insightsPage, certificates: certPage, team: teamPage, accuracy: accuracyPage };
 async function route() {
   const h = location.hash.replace(/^#\/?/, "");
@@ -357,12 +360,14 @@ async function route() {
   if (PRIVATE[name] && !S.me) { fn = landing; }
   if (name === "" && S.me) fn = home;
   S.seq++;
+  document.body.classList.remove("landing");
   window.scrollTo(0, 0);
   try { await fn(arg); }
   catch (e) { if (e instanceof Stale) return; $("#app").innerHTML = `<div class="card empty"><b>Something went wrong.</b><br>${esc(e.message)}<br><br><button class="btn" onclick="route()">Try again</button></div>`; }
   renderGuide();
 }
 window.addEventListener("hashchange", route);
+let _rsz; window.addEventListener("resize", () => { clearTimeout(_rsz); _rsz = setTimeout(renderGuide, 200); });
 window.addEventListener("unhandledrejection", (e) => { if (e.reason && e.reason.message) toast(e.reason.message, true); });
 
 (async function boot() {

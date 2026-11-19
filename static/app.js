@@ -264,6 +264,8 @@ function bindDoc(root, prefix) {
 function renderHeader() {
   const me = S.me;
   $("#nav").hidden = !me;
+  document.body.classList.toggle("app-mode", !!me);
+  $("#pubnav").hidden = !!me;
   $("#ws").innerHTML = me ? `<span class="wsname" title="Workspace">${esc(me.org_name)}</span>${me.demo ? '<span class="tag demo">demo sandbox</span>' : '<span class="tag ok">team</span>'}` : "";
   const rb = $("#rolebox");
   if (!me) { rb.innerHTML = `<a class="btn sm" href="#/signin">Sign in</a>`; return; }
@@ -295,42 +297,175 @@ async function startDemo(btn) {
     CK.reset(SAMPLES.risky); S.autorun = true;
     location.hash = "#/check";
     renderGuide();
-    toast("Your private demo is ready — the guide (bottom right) walks you through it.");
+    toast(window.innerWidth >= 1100 ? "Your private demo is ready. The judge path in the sidebar walks you through it." : "Your private demo is ready. The judge path (bottom right) walks you through it.");
   });
 }
 
 /* ---------------------------------------------------------------- landing & auth pages */
+const TRY_TEXT = "SoundPods Pro ab sirf saat hazaar rupaye mein! Aadhe daam ka Diwali offer, aajeevan warranty ke saath. Jaldi karo, stock khatam hone wala hai!";
 async function landing() {
   if (S.me) return home();
+  document.body.classList.add("landing");
+  const r = SAMPLES.risky.text;
   $("#app").innerHTML = `
-  <section class="hero">
-    <div>
-      <div class="eyebrow">Brand governance · before you publish</div>
-      <h1 style="margin:10px 0 12px">Every claim checked.<br>Every flag <em>proven</em>.</h1>
-      <p class="lead">BrandProof AI checks posts, ads, documents and posters against your approved facts, rules, logo and palette — in English, Hindi and Hinglish. Every issue shows the exact guideline behind it and a fix that keeps the creator's message. A person always approves, and every approval gets a tamper-evident Proof Certificate.</p>
-      <div class="row" style="margin-top:16px">
-        <button class="btn pri big" id="go-demo">▶ Try the demo — no sign-up</button>
-        <a class="btn big" href="#/signup">Create a team workspace</a>
+  <section class="hero2">
+    <div class="wrap hero2-in">
+      <div class="hero2-copy">
+        <p class="kicker">Brand governance for teams that publish every day</p>
+        <h1>Catch the wrong price before your customers do.</h1>
+        <p class="lead">BrandProof reads every caption, poster and brochure against your approved facts, rules and logo. Each problem comes with the guideline it breaks, where that guideline came from, and a fix that keeps your message. A person approves, and the approval is sealed in a Proof Certificate.</p>
+        <div class="row" style="margin-top:22px">
+          <button class="btn pri big" id="go-demo">Start the demo, no sign-up</button>
+          <a class="btn big glass" href="#try">Check your own caption</a>
+        </div>
+        <p class="hero-note">The demo opens a private sandbox for a fictional brand, ABC Electronics, with a 9-step guide. <a href="#/signin">Sign in</a> or <a href="#/signup">create a team</a>.</p>
       </div>
-      <p class="small muted" style="margin-top:10px">The demo gives you a private sandbox with a fictional brand (ABC Electronics) and a step-by-step guide. Already have an account? <a href="#/signin">Sign in</a>.</p>
-    </div>
-    <div class="demo-ad">
-      <div class="bar">AI-generated draft · Instagram</div>
-      <div style="padding:16px" class="doc">${esc(SAMPLES.risky.text)}</div>
-      <div style="padding:10px 14px" class="row small"><span class="tag high">4 high</span><span class="tag medium">3 medium</span><span class="muted">→ fixed to risk 0 with the offer, call-to-action and product kept</span></div>
+      <figure class="proofsheet" aria-label="Example: an AI-written ad marked up by BrandProof">
+        <div class="ps-head"><span>Instagram draft, written with AI</span><span class="ps-score"><b>100</b> risk</span></div>
+        <p class="ps-text">${proofMarks(r)}</p>
+        <ol class="ps-notes">
+          <li>The current price is <b>₹10,000</b> (Price List, Oct 2026). The draft says ₹7,000.</li>
+          <li>The maximum discount is <b>20%</b> (Festive Offer Policy §2). The draft offers 50%.</li>
+          <li>The warranty is <b>2 years</b> (Brand Book p.6), not lifetime.</li>
+        </ol>
+        <div class="ps-seal" aria-hidden="true"><svg viewBox="0 0 120 120"><defs><path id="sealp" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs><circle cx="60" cy="60" r="56"/><text><textPath href="#sealp">APPROVED · PROOF CERTIFICATE · SHA-256 ·</textPath></text><path d="M42 61l12 12 25-27" class="tick"/></svg></div>
+      </figure>
     </div>
   </section>
-  ${howItWorks()}`;
+
+  <section class="band how" id="how">
+    <div class="wrap">
+      <h2>From draft to approved in four steps</h2>
+      <p class="sub">Nothing is published until a person says so. BrandProof does the checking and keeps the record.</p>
+      ${howSteps()}
+      <p class="center"><a class="btn" href="#/how">Read the full guide: roles, pages and the 5-minute judge path</a></p>
+    </div>
+  </section>
+
+  <section class="band try" id="try">
+    <div class="wrap try-in">
+      <div>
+        <h2>Try a caption</h2>
+        <p class="sub">Paste any English, Hindi or Hinglish ad copy for ABC Electronics. This quick check uses only the exact rules, so it sends nothing to AI and stores nothing.</p>
+        <label class="f" for="try-text">Caption</label>
+        <textarea class="inp" id="try-text" maxlength="1500">${esc(TRY_TEXT)}</textarea>
+        <div class="row" style="margin-top:10px"><button class="btn pri" id="try-go">Check this caption</button>
+          <button class="btn ghost" data-try="Get SoundPods Pro for ₹10,000 with 20% off and a 2-year warranty. T&C apply.">Use a clean one</button>
+          <button class="btn ghost" data-try="India's best earbuds! Battery never runs out. Guaranteed results or your money back.">Use an English one</button></div>
+        <p class="tiny muted" style="margin-top:8px">The facts it checks against: price ₹10,000, maximum discount 20%, warranty 2 years, battery 30 hours.</p>
+      </div>
+      <div id="try-out" class="try-out"><div class="try-empty">Your marked-up caption will appear here, with each issue, the approved fact and a suggested fix.</div></div>
+    </div>
+  </section>
+
+  <section class="band checks">
+    <div class="wrap">
+      <h2>What gets checked</h2>
+      <div class="checklist">
+        <div><h3>Words</h3><p>Prices, discounts, warranty and specs against dated facts. Superlatives without proof, guarantees, banned terms, product names, pressure tactics, confidential project names, missing “T&amp;C apply”.</p></div>
+        <div><h3>Posters</h3><p>Every line of text inside the image is read and boxed, then checked by the same rules. Contrast is measured per line, the logo is matched against the approved file, and colours are compared with the palette.</p></div>
+        <div><h3>Documents</h3><p>PDF and Word brochures, with the page or paragraph of each issue. Brand books can be imported and turned into rules after an admin approves them.</p></div>
+        <div><h3>Three ways of writing</h3><p>English, Hindi and Hinglish, with numbers in digits or words: “₹7,000”, “seven thousand”, “saat hazaar”, “सात हज़ार” are all the same price.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band numbers" id="numbers"><div class="wrap"><h2>Measured, not promised</h2><p class="sub">Every release is tested on 266 labelled ads. These figures load from the live benchmark.</p><div class="nums" id="nums"><div class="muted">Loading the benchmark…</div></div><p class="center"><a class="btn glass" href="#/trust">How AI is used and what stays private</a></p></div></section>
+
+  <section class="band closing"><div class="wrap center">
+    <h2>See it on a real workflow</h2>
+    <p class="sub">Creator writes, Compliance clears claims, a Reviewer approves. Switch roles in one click inside the demo.</p>
+    <div class="row" style="justify-content:center;margin-top:16px"><button class="btn pri big" id="go-demo2">Start the demo</button><a class="btn big" href="https://github.com/sanjaykumarpathak640-png/brandproof-ai">Read the code</a></div>
+  </div></section>`;
   $("#go-demo").onclick = (e) => startDemo(e.currentTarget);
+  $("#go-demo2").onclick = (e) => startDemo(e.currentTarget);
+  $$("[data-try]").forEach((b) => (b.onclick = () => { $("#try-text").value = b.dataset.try; runTry(); }));
+  $("#try-go").onclick = runTry;
+  $$('a[href="#try"],a[href="#how"]').forEach((a) => (a.onclick = (e) => { e.preventDefault(); $(a.getAttribute("href")).scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }));
+  try {
+    const d = await api("/api/benchmark", { allow401: true });
+    const o = d.rules_all, a = d.ai_run && !d.ai_run.error ? d.ai_run : null;
+    const pc = (x) => (x == null ? "–" : (100 * x).toFixed(1).replace(/\.0$/, "") + "%");
+    if (!o || !$("#nums")) return;
+    $("#nums").innerHTML = `
+      <div><b>${o.samples}</b><span>labelled ads in English, Hindi and Hinglish</span></div>
+      <div><b>${pc(o.precision)}</b><span>of rule flags were real problems (no false alarms)</span></div>
+      <div><b>${pc(o.recall)}</b><span>of problems caught by the rules alone</span></div>
+      ${a ? `<div><b>${pc(a.rules_only.recall)} → ${pc(a.rules_plus_ai.recall)}</b><span>caught on the ${a.subset_size} hardest ads when AI is added</span></div>` : ""}`;
+  } catch (e) {}
+}
+function proofMarks(text) {
+  const marks = [["₹7,000", 1], ["50% OFF", 2], ["lifetime warranty", 3]];
+  let out = esc(text);
+  for (const [w, n] of marks) {
+    const i = out.toLowerCase().indexOf(w.toLowerCase());
+    if (i >= 0) out = out.slice(0, i) + `<mark class="pm" style="--d:${n}">${out.slice(i, i + w.length)}<sup>${n}</sup></mark>` + out.slice(i + w.length);
+  }
+  return out;
+}
+async function runTry() {
+  const text = $("#try-text").value.trim();
+  const out = $("#try-out");
+  if (!text) { toast("Paste a caption first.", true); return; }
+  await once($("#try-go"), "Checking…", async () => {
+    const r = await api("/api/try", { method: "POST", body: { text }, allow401: true });
+    r.findings.forEach((f, i) => (f.n = i + 1));
+    const lvl = r.risk.level || "";
+    out.innerHTML = `<div class="try-res">
+      <div class="row between"><b>${r.findings.length ? `${r.findings.length} issue${r.findings.length > 1 ? "s" : ""} found` : "No issues found"}</b><span class="riskchip ${lvl.toLowerCase()}">Risk ${r.risk.score} · ${esc(lvl)}</span></div>
+      <div class="doc" style="margin-top:10px">${highlight(text, r.findings)}</div>
+      <div class="findings" style="margin-top:12px">${r.findings.map((f) => findingCard(f)).join("") || '<div class="notice ok">This caption matches the ABC Electronics Brand Memory. In the app it would now go to a Reviewer for approval.</div>'}</div>
+      <p class="small" style="margin-top:12px">In the full product you can apply the fixes in one click, add AI review for meaning-based claims, and send it for approval. <a href="#" id="try-demo">Start the demo</a>.</p></div>`;
+    $("#try-demo").onclick = (e) => { e.preventDefault(); startDemo($("#go-demo")); };
+  });
+}
+function howSteps() {
+  return `<ol class="how4">
+    <li><h3>Teach it your brand</h3><p>A Brand Admin imports the brand book or types in the facts: price, discount limit, warranty, banned words, logo, palette. Every value has a source and a date, and every change gets an impact preview.</p></li>
+    <li><h3>Check before publishing</h3><p>A Creator pastes a caption or uploads a poster, PDF or Word file. Rules check the facts exactly; AI adds meaning-based issues only when it can quote the words.</p></li>
+    <li><h3>Fix without losing the message</h3><p>Pick the fixes you want. Purpose Guard confirms the product, the offer and the call-to-action are still there.</p></li>
+    <li><h3>Approve and seal</h3><p>Compliance clears risky claims, a Reviewer approves, and BrandProof issues a hash-chained Proof Certificate naming who approved what, and when.</p></li>
+  </ol>`;
 }
 function howItWorks() {
-  return `<section class="card" style="margin-top:18px"><h3>How it works</h3>
-    <div class="steps">
-      <div class="step"><span class="n">1</span><b>Brand Memory</b><span class="muted small">Import your brand book. Facts, prices, rules, terms, logo and palette are versioned and approved by an admin.</span></div>
-      <div class="step"><span class="n">2</span><b>Check</b><span class="muted small">Text, PDF, DOCX and posters. Numbers, terms, colours, contrast and logo are checked in code. AI reads text inside images and judges tone, and every AI finding must cite real evidence.</span></div>
-      <div class="step"><span class="n">3</span><b>Fix &amp; Purpose Guard</b><span class="muted small">Each fix changes only the flagged words. Purpose Guard confirms the product, offer and call-to-action survive.</span></div>
-      <div class="step"><span class="n">4</span><b>Approve &amp; Prove</b><span class="muted small">Compliance, then a Reviewer (four-eyes). Approval issues a hash-chained Proof Certificate with the verified approvers.</span></div>
-    </div></section>`;
+  return `<section class="card" style="margin-top:18px"><h3>How it works</h3>${howSteps()}<p class="small" style="margin-top:6px"><a href="#/how">Full guide: roles, pages and the 5-minute judge path</a></p></section>`;
+}
+async function howPage() {
+  $("#app").innerHTML = `
+  <div class="page-h"><div><h2>How BrandProof works</h2><p>Everything a new user or judge needs, on one page.</p></div>
+    ${S.me ? `<a class="btn pri" href="#/check">Go to Check</a>` : `<button class="btn pri" id="go-demo">Start the demo, no sign-up</button>`}</div>
+  <section class="card"><h3>The four steps</h3>${howSteps()}</section>
+  <div class="grid g2" style="margin-top:16px">
+    <section class="card"><h3>Who does what</h3>
+      <table class="t"><tr><th>Role</th><th>Does</th></tr>
+      <tr><td><b>Creator</b></td><td>Writes or uploads content, applies fixes, submits, resubmits after changes.</td></tr>
+      <tr><td><b>Compliance</b></td><td>Clears or dismisses high-risk claims with a reason. Only Compliance can dismiss high severity.</td></tr>
+      <tr><td><b>Reviewer</b></td><td>Final brand check: approves (a Proof Certificate is issued) or requests changes. Can't approve their own work.</td></tr>
+      <tr><td><b>Brand Admin</b></td><td>Owns Brand Memory: facts, rules, terms, logo, palette, imports. Previews the impact of every change. Invites the team.</td></tr></table>
+      <p class="small muted">In the demo, switch roles with <b>Acting as</b> in the sidebar. In a team workspace, roles come from invites.</p></section>
+    <section class="card"><h3>Where to find what</h3>
+      <table class="t">
+      <tr><td><b>Check</b></td><td>Paste text or upload a poster, PDF or DOCX. Try the sample buttons at the top.</td></tr>
+      <tr><td><b>Queue</b></td><td>Everything waiting for review, filtered by status. The number shows what's waiting for your role.</td></tr>
+      <tr><td><b>Brand Memory</b></td><td>The approved facts, rules and assets, with versions and the impact preview.</td></tr>
+      <tr><td><b>Insights</b></td><td>Which rules break most, risk over time, and rules the AI suggests improving.</td></tr>
+      <tr><td><b>Certificates</b></td><td>Every approval, chained by hash. Paste text to check it matches what was approved.</td></tr>
+      <tr><td><b>Team</b></td><td>Members, roles and invite links.</td></tr>
+      <tr><td><b>Accuracy</b></td><td>The live benchmark: how often the checks are right, by language.</td></tr>
+      <tr><td><b>Trust</b></td><td>What AI is used for, what stays private, and the feedback form.</td></tr></table></section>
+  </div>
+  <section class="card" style="margin-top:16px"><h3>5-minute judge path</h3>
+    <ol class="judge">
+      <li>Start the demo. It opens on <b>Check</b> with a risky AI-written ad already checked: risk 100, every issue with its rule and source.</li>
+      <li>Click <b>Apply fixes</b>, then <b>Submit</b>. Use the blue <b>Switch to…</b> button to act as Compliance, then Reviewer, and approve. Open the Proof Certificate.</li>
+      <li>Back on Check, click <b>Off-brand poster</b>: text inside the image is boxed, contrast is measured per line, the missing logo is flagged.</li>
+      <li>Click <b>Hinglish</b> or <b>हिंदी</b>: prices and claims written in words are caught.</li>
+      <li>Switch to <b>Brand Admin</b>, open <b>Brand Memory</b>, set the maximum discount to 10 and click <b>Preview impact</b> to see which approved posts would break.</li>
+    </ol>
+    <p class="small muted">The judge path in the sidebar (bottom-right on phones) tracks these steps. Each visitor gets a private sandbox, deleted after 48 hours of inactivity.</p></section>
+  <section class="card" style="margin-top:16px"><h3>Why you can trust a flag</h3>
+    <p>Facts are checked by exact rules in code, so the same text always gets the same result, even with AI switched off. AI adds findings only when it quotes words that really are in the draft and names a real rule; anything else is dropped before you see it. Personal details and confidential project names are masked before any text is sent, and Confidential mode sends nothing at all.</p></section>`;
+  const g = $("#go-demo"); if (g) g.onclick = (e) => startDemo(e.currentTarget);
 }
 async function home() {
   if (!S.me) return landing();

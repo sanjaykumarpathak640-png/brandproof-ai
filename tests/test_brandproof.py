@@ -295,6 +295,19 @@ def test_overloaded_model_falls_back_and_breaker_skips_it(monkeypatch):
     ai._BREAKER["until"] = 0
 
 
+def test_public_try_caption_needs_no_account_and_stores_nothing(C):
+    from fastapi.testclient import TestClient
+    from app import db
+    anon = TestClient(app)
+    before = db.one("SELECT COUNT(*) AS n FROM submissions")["n"]
+    r = anon.post("/api/try", json={"text": "SoundPods Pro sirf saat hazaar rupaye mein! Aadhe daam, aajeevan warranty."})
+    assert r.status_code == 200
+    ids = {f["rule_id"] for f in r.json()["findings"]}
+    assert {"R-PRC-01", "R-PRC-02", "R-WAR-01"} <= ids
+    assert db.one("SELECT COUNT(*) AS n FROM submissions")["n"] == before
+    assert anon.post("/api/try", json={"text": ""}).status_code in (400, 422)
+
+
 def test_redaction_masks_personal_and_confidential():
     out, n = ai.redact("Mail riya@abc.in or call 9876543210 about Project Falcon", ["Project Falcon"])
     assert "riya@abc.in" not in out and "9876543210" not in out and "Project Falcon" not in out and n == 3

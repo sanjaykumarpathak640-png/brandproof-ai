@@ -238,6 +238,33 @@ def health():
     return {"ok": True, "ai": ai.available(), "model": ai.model_name(), "db": "postgres" if db.IS_PG else "sqlite", "version": app.version}
 
 
+class TryIn(BaseModel):
+    text: str = Field(min_length=1, max_length=1500)
+
+
+_try_hits: dict = {}
+
+
+@app.post("/api/try")
+def try_caption(body: TryIn, request: Request):
+    """Public, no sign-up: rules-only check of one short caption against the ABC Electronics demo brand. Nothing is stored."""
+    import time as _t
+    from . import engine
+    from .benchmark_runner import bench_org
+    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0].strip()
+    now = _t.time()
+    hits = [h for h in _try_hits.get(ip, []) if now - h < 60]
+    if len(hits) >= 20:
+        raise HTTPException(429, "Too many tries in a minute. Wait a moment, or start the demo for the full product.")
+    _try_hits[ip] = hits + [now]
+    if len(_try_hits) > 5000:
+        _try_hits.clear()
+    brand = db.brand_snapshot(bench_org())
+    r = engine.run_rules(body.text, brand)
+    return {"findings": r["findings"], "risk": r["risk"],
+            "brand": brand["meta"].get("brand_name", "ABC Electronics"), "brand_version": brand.get("version")}
+
+
 @app.post("/api/demo/start")
 def demo_start(request: Request, response: Response):
     old = request.cookies.get(COOKIE)

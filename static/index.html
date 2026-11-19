@@ -6,30 +6,32 @@
 <title>BrandProof AI — brand governance before you publish</title>
 <meta name="description" content="BrandProof AI checks content against approved brand guidelines, facts and assets before publication, with evidence for every issue and human approval.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/styles.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/styles.css?v=5">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23121826'/><path d='M9 16.5l4.5 4.5L23 11' stroke='%2322c993' stroke-width='3.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="logo" href="#/"><span class="mk"><svg width="18" height="18" viewBox="0 0 32 32" aria-hidden="true"><path d="M8 16.5l5 5L24 10" stroke="#22c993" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Brand<b>Proof</b>&nbsp;AI</a>
+  <a class="logo" href="#/"><span class="mk"><svg width="18" height="18" viewBox="0 0 32 32" aria-hidden="true"><path d="M8 16.5l5 5L24 10" stroke="#22c993" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="wm">Brand<b>Proof</b><i>AI</i></span></a>
   <span id="ws" class="ws"></span>
   <nav class="main" id="nav" hidden aria-label="Main">
-    <a href="#/check" data-r="check">Check</a>
-    <a href="#/queue" data-r="queue">Queue <span class="cnt" id="qcount" hidden></span></a>
-    <a href="#/brand" data-r="brand">Brand Memory</a>
-    <a href="#/insights" data-r="insights">Insights</a>
-    <a href="#/certificates" data-r="certificates">Certificates</a>
-    <a href="#/team" data-r="team">Team</a>
-    <a href="#/accuracy" data-r="accuracy">Accuracy</a>
-    <a href="#/trust" data-r="trust">Trust</a>
+    <a href="#/check" data-r="check"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h11M4 10h8M4 15h6"/><path d="M14 17l3 3 5-6"/></svg><span>Check</span></a>
+    <a href="#/queue" data-r="queue"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg><span>Queue</span> <span class="cnt" id="qcount" hidden></span></a>
+    <a href="#/brand" data-r="brand"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg><span>Brand Memory</span></a>
+    <a href="#/insights" data-r="insights"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Insights</span></a>
+    <a href="#/certificates" data-r="certificates"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="M9 13.5L8 21l4-2 4 2-1-7.5"/></svg><span>Certificates</span></a>
+    <a href="#/team" data-r="team"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 010 5.6M18 14.5c1.8.8 3 2.7 3 5"/></svg><span>Team</span></a>
+    <a href="#/accuracy" data-r="accuracy"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8"/></svg><span>Accuracy</span></a>
+    <a href="#/trust" data-r="trust"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v6c0 4.4-3 7.8-7 9-4-1.2-7-4.6-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span>Trust</span></a>
+    <a href="#/how" data-r="how" class="navhow"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-.9.6-1.5 1.1-1.5 2.2M12 17h.01"/></svg><span>How it works</span></a>
   </nav>
+  <a class="pubnav" id="pubnav" href="#/how">How it works</a>
   <span class="aipill" id="aipill">AI: …</span>
   <div class="rolebox" id="rolebox"></div>
 </div></header>
 <main id="app" tabindex="-1"><div class="card empty"><span class="spin dark"></span> Loading…</div></main>
-<footer>BrandProof AI v3 · Team Bug Hunters (IIT Patna) · built for the Inkloom AI brand-governance problem. Demo brand “ABC Electronics” and all sample people are fictional. <a href="#/trust">Trust &amp; data</a> · <a href="/docs">API</a></footer>
-<script src="/static/app.js?v=4"></script>
-<script src="/static/pages.js?v=4"></script>
+<footer id="foot">BrandProof AI v3 · Team Bug Hunters (IIT Patna) · built for the Inkloom AI brand-governance problem. Demo brand “ABC Electronics” and all sample people are fictional. <a href="#/trust">Trust &amp; data</a> · <a href="/docs">API</a> · <a href="https://github.com/sanjaykumarpathak640-png/brandproof-ai">Code on GitHub</a></footer>
+<script src="/static/app.js?v=5"></script>
+<script src="/static/pages.js?v=5"></script>
 </body>
 </html>

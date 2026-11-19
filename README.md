@@ -78,7 +78,7 @@ Notes: Render's free web service sleeps when idle (first request can take ~50 s;
 
 ```bash
 pip install -r requirements-dev.txt
-pytest -q                                   # 31 tests, SQLite, no network (AI is mocked)
+pytest -q                                   # 32 tests, SQLite, no network (AI is mocked)
 DATABASE_URL=postgres://… pytest -q         # same suite on PostgreSQL
 python -m benchmark.run_benchmark           # accuracy report → benchmark/results.json
 python -m benchmark.run_benchmark --ai      # + rules vs rules+AI on the hard subset (needs GEMINI_API_KEY)

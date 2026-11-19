@@ -8,7 +8,10 @@ from __future__ import annotations
 import json
 import re
 from collections import Counter, defaultdict
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
+import os as _os
+
+AI_WAIT = float(_os.getenv("AI_WAIT_SECONDS", "25"))
 from datetime import date, datetime, timedelta, timezone
 
 from . import ai, certs, db, engine, vision
@@ -135,12 +138,20 @@ def run_check(org: int, text: str, *, confidential: bool = False, use_ai: bool =
         logo = db.logo_data(org)
         fut_img = pool.submit(vision.analyse_creative, image_bytes, image_mime or "image/png", logo, use_ai=(use_ai and not confidential))
     if fut_text:
-        ai_info = fut_text.result()
-        findings = findings + ai_info.pop("findings", [])
+        try:
+            ai_info = fut_text.result(timeout=AI_WAIT)
+            findings = findings + ai_info.pop("findings", [])
+        except FutureTimeout:
+            ai_info["error"] = ("The AI service is slow right now, so rule results are shown first. "
+                                "It keeps working in the background: run the check again in a few seconds to add its findings.")
     image_info = None
     if image_bytes:
         image_info = analyse_image(image_bytes, brand["palette"])
-        creative = fut_img.result()
+        try:
+            creative = fut_img.result(timeout=AI_WAIT + 10)
+        except FutureTimeout:
+            creative = vision.analyse_creative(image_bytes, image_mime or "image/png", db.logo_data(org), use_ai=False)
+            creative["text"].update(status="error", reason="The AI service is slow right now; it keeps reading the poster in the background. Run the check again in a few seconds.")
         image_info["creative"] = creative
         if not alt_text.strip():
             alt = creative.get("alt")

@@ -1,6 +1,6 @@
 # Testing
 
-## 1. Automated tests — `pytest -q` (31 tests, all passing)
+## 1. Automated tests — `pytest -q` (32 tests, all passing)
 Runs on SQLite by default and on PostgreSQL with `DATABASE_URL=postgres://…` (both verified). AI calls are mocked, so no network is needed.
 
 | Area | What is proven |

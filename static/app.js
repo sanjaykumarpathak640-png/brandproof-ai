@@ -188,8 +188,10 @@ function riskOf(findings) {
   const score = Math.min(100, t);
   return { score, level: score >= 50 ? "High" : score >= 20 ? "Medium" : score > 0 ? "Low" : "Clear", counts, breakdown };
 }
-function aiNotice(ai) {
+function aiNotice(ai, img) {
   if (!ai) return "";
+  const read = img && img.creative && img.creative.text && img.creative.text.status === "ok";
+  if (!ai.used && read) return `<div class="notice ai small">🛡️ <b>AI use:</b> ${esc(img.creative.text.model || "the vision model")} only read the words in the poster. Every finding above comes from the same exact, repeatable rules used for text.</div>`;
   if (!ai.used) return `<div class="notice ai small">🛡️ <b>AI review:</b> ${esc(ai.error || "not used")} All findings above come from exact, repeatable rule checks.</div>`;
   const ex = (ai.dropped_examples || []).map((d) => `<li>“${esc(d.quote)}” — ${esc(d.reason)}</li>`).join("");
   return `<div class="notice ai small">🛡️ <b>Evidence verifier</b> (${esc(ai.model)}${ai.cached ? ", cached result" : ""}): the AI proposed <b>${ai.checked}</b> issue(s).
@@ -517,7 +519,7 @@ async function check(sample) {
       <div class="card"><div class="row between"><h3 style="margin:0">Findings (${r.findings.length})</h3>
         ${textFindings.some((f) => f.fix) ? `<div class="row"><button class="btn sm" id="c-all">Select all fixes</button><button class="btn ok" id="c-apply" ${nFix ? "" : "disabled"}>Apply ${nFix} fix${nFix === 1 ? "" : "es"}</button></div>` : ""}</div>
         <div class="findings" style="margin-top:10px">${r.findings.length ? r.findings.map((f) => findingCard(f, { selectable: true, accepted: st.accepted, contest: canSubmit, contests: st.contests })).join("") : '<div class="notice ok">✅ No issues found. This content matches Brand Memory.</div>'}</div>
-        <div style="margin-top:10px">${aiNotice(r.ai)}</div></div>
+        <div style="margin-top:10px">${aiNotice(r.ai, r.image)}</div></div>
       <div class="card"><div class="row between"><div><h3 style="margin:0">Submit for review</h3><div class="small muted">${submitHint(r)}</div></div>
         <button class="btn pri" id="c-submit" ${canSubmit ? "" : "disabled"}>Submit ${st.fixed ? "revised" : "this"} version →</button></div></div>`;
     $("#c-image").innerHTML = creativeBlock(r.image, st.image, r.findings);
@@ -645,7 +647,7 @@ async function submissionPage(id) {
         <div class="stack">
           <div class="card"><h3>Risk · v${v.version}</h3>${riskBlock(riskOf(v.findings))}</div>
           <div class="card"><h3>Findings in v${v.version} (${v.findings.length})</h3><div class="findings">${cards || '<div class="notice ok">✅ No open issues in this version.</div>'}</div>
-            <div style="margin-top:10px">${aiNotice(v.ai_info)}</div></div>
+            <div style="margin-top:10px">${aiNotice(v.ai_info, v.image_info)}</div></div>
         </div>
       </div>`;
     bindDoc(document, "s");

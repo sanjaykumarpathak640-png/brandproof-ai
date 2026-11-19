@@ -22,8 +22,9 @@
 
 **Reliability & usability**
 - Idempotent submit/approve/clear/dismiss (409 on repeats); input limits; friendly errors for every failure; request timeouts; “waking up the server” message; state kept across refresh; empty states; keyboard focus styles; guided demo.
+- Faster, sturdier AI: one combined vision call per poster; text and image AI run in parallel; a backup Flash model is tried once if the main model is overloaded or times out; rule results are never held back more than ~25 s by a slow AI service (the AI finishes in the background and is cached for the next run).
 - AI-assisted free-form brand-book import (values verified against the document).
-- 31 automated tests (SQLite + PostgreSQL), Playwright end-to-end test, docs.
+- 32 automated tests (SQLite + PostgreSQL), Playwright end-to-end test, docs.
 
 ## v2.0 — Round 2
 Rule engine, explainable report, fixes with Purpose Guard, approval workflow, Proof Certificates, insights, brand-book import, image palette checks.

@@ -260,6 +260,19 @@ def test_ai_verifier_drops_unevidenced_findings(monkeypatch):
     assert info["checked"] == 3 and info["dropped"] == 2 and len(info["findings"]) == 1
 
 
+def test_slow_ai_never_blocks_rule_results(C, monkeypatch):
+    import time
+    from app import service
+    monkeypatch.setattr(ai, "API_KEY", "test")
+    monkeypatch.setattr(service, "AI_WAIT", 0.3)
+    monkeypatch.setattr(ai, "ai_review", lambda *a, **k: time.sleep(2) or {"used": True, "findings": []})
+    t = time.time()
+    r = C.post("/api/check", json={"text": "Best earbuds in India, only Rs 999!", "use_ai": True}, headers=H("creator"))
+    assert r.status_code == 200 and time.time() - t < 1.8
+    body = r.json()
+    assert "slow" in body["ai"]["error"] and "R-PRC-01" in {f["rule_id"] for f in body["findings"]}
+
+
 def test_redaction_masks_personal_and_confidential():
     out, n = ai.redact("Mail riya@abc.in or call 9876543210 about Project Falcon", ["Project Falcon"])
     assert "riya@abc.in" not in out and "9876543210" not in out and "Project Falcon" not in out and n == 3

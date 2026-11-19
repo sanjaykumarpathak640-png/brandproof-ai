@@ -357,7 +357,7 @@ async function route() {
   const [name, arg] = h.split("/");
   $$("#nav a").forEach((a) => a.classList.toggle("on", a.dataset.r === name));
   let fn = PUBLIC[name] || PRIVATE[name] || landing;
-  if (PRIVATE[name] && !S.me) { fn = landing; }
+  if (PRIVATE[name] && !S.me) { fn = landing; history.replaceState(null, "", location.pathname + location.search + "#/"); }
   S.seq++;
   document.body.classList.remove("landing");
   renderHeader();

@@ -299,7 +299,7 @@ async function startDemo(btn) {
     S.role = "creator"; store.set("role", "creator"); store.set("guide", { open: window.innerWidth > 960, done: {} });
     renderHeader(); refreshCounts();
     CK.reset(SAMPLES.risky); S.autorun = true;
-    location.hash = "#/check";
+    if (location.hash === "#/check") route(); else location.hash = "#/check";
     renderGuide();
     toast(window.innerWidth >= 1100 ? "Your private demo is ready. The judge path in the sidebar walks you through it." : "Your private demo is ready. The judge path (bottom right) walks you through it.");
   });

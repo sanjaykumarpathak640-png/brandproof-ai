@@ -495,7 +495,7 @@ async function check(sample) {
   $("#c-run").onclick = (ev) => {
     sync();
     if (!st.text.trim() && !st.image) { toast("Add some text or an image first.", true); $("#c-text").focus(); return; }
-    once(ev.currentTarget, st.image ? "Checking text, image and logo…" : "Checking…", async () => {
+    once(ev.currentTarget, st.image ? "Reading the poster with AI… (first time up to ~40 s)" : "Checking…", async () => {
       st.result = await api("/api/check", { method: "POST", body: { text: st.text, goal: st.goal, confidential: st.confidential, image: st.image, alt_text: st.alt, pages: st.text === st.pagesText ? st.pages : null } });
       st.original = st.text; st.fixed = null; st.contests = {};
       st.accepted = new Set(st.result.findings.filter((f) => f.fix && !f.fix.overlaps && !f.fix.target && !f.fix.design_only).map((f) => f.key));

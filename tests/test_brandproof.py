@@ -227,9 +227,7 @@ def test_text_inside_image_is_checked_with_boxes(monkeypatch):
     def fake(parts, timeout=40):
         t = " ".join(p.get("text", "") for p in parts)
         if "Read ALL visible text" in t:
-            return json.dumps(lines)
-        if "approved logo" in t:
-            return json.dumps({"present": False, "altered": False, "box_2d": None, "notes": "none"})
+            return json.dumps({**lines, "alt": "Red Diwali sale poster", "logo": {"present": False, "altered": False, "box_2d": None, "notes": "none"}})
         return json.dumps({"alt": "poster"}) if "alt text" in t else json.dumps({"findings": []})
     monkeypatch.setattr(ai, "_call", fake)
     r = c.post("/api/check", json={"text": "", "image": img("diwali_poster_offbrand.png"), "alt_text": "poster"}, headers=H("creator")).json()

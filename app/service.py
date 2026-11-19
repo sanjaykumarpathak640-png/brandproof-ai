@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import re
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 
 from . import ai, certs, db, engine, vision
@@ -123,23 +124,32 @@ def run_check(org: int, text: str, *, confidential: bool = False, use_ai: bool =
     findings = res["findings"]
     ai_info = {"used": False, "model": ai.model_name(), "checked": 0, "dropped": 0, "merged": 0, "redactions": 0, "error": None,
                "dropped_examples": []}
+    # the text review and the image reading run at the same time
+    pool = ThreadPoolExecutor(max_workers=2)
+    fut_text = fut_img = None
     if confidential:
         ai_info["error"] = "Confidential mode: nothing was sent to any AI service."
     elif use_ai and text.strip():
-        ai_info = ai.ai_review(text, brand, findings)
+        fut_text = pool.submit(ai.ai_review, text, brand, list(findings))
+    if image_bytes:
+        logo = db.logo_data(org)
+        fut_img = pool.submit(vision.analyse_creative, image_bytes, image_mime or "image/png", logo, use_ai=(use_ai and not confidential))
+    if fut_text:
+        ai_info = fut_text.result()
         findings = findings + ai_info.pop("findings", [])
     image_info = None
     if image_bytes:
         image_info = analyse_image(image_bytes, brand["palette"])
-        creative = vision.analyse_creative(image_bytes, image_mime or "image/png", db.logo_data(org), use_ai=(use_ai and not confidential))
+        creative = fut_img.result()
         image_info["creative"] = creative
         if not alt_text.strip():
-            alt = None if confidential else ai.describe_image(image_bytes, image_mime or "image/png")
+            alt = creative.get("alt")
             image_info["alt_ai"] = bool(alt)
             image_info["alt_suggestion"] = alt or f"{brand['meta'].get('brand_name')} promotional image (please describe the key visual and any text)."
         txt_findings, joined = image_text_findings(creative, brand)
         image_info["image_text"] = joined
         findings += txt_findings + image_findings(image_info, creative, alt_text, brand)
+    pool.shutdown(wait=False)
     findings = engine.resolve(findings)
     engine.locate([f for f in findings if f.get("target") not in ("image", "image_text")], text, pages)
     for f in findings:

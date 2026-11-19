@@ -11,7 +11,9 @@ def fake_call(parts, timeout=40):
             {"text": "DIWALI MEGA SALE", "box_2d": [105, 60, 200, 760]},
             {"text": "50% OFF", "box_2d": [215, 60, 345, 560]},
             {"text": "SoundPods Pro – just ₹7,000", "box_2d": [735, 60, 800, 900]},
-            {"text": "India's No. 1 earbuds · Lifetime warranty", "box_2d": [818, 60, 870, 960]}]})
+            {"text": "India's No. 1 earbuds · Lifetime warranty", "box_2d": [818, 60, 870, 960]}],
+            "alt": "Red Diwali sale poster with earbuds and price text.",
+            "logo": {"present": False, "altered": False, "box_2d": None, "notes": "No ABC logo visible."}})
     if "approved logo" in text:
         return json.dumps({"present": False, "altered": False, "box_2d": None, "notes": "No ABC logo visible."})
     if "alt text" in text:

@@ -71,11 +71,21 @@ def redact(text: str, confidential_terms: list[str]) -> tuple[str, int]:
     return out, n
 
 
+_THINKING = {"ok": True}
+
+
 def _post(model: str, parts: list, timeout: float):
-    return httpx.post(URL.format(model=model), params={"key": API_KEY},
-                      json={"contents": [{"role": "user", "parts": parts}],
-                            "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}},
-                      timeout=timeout)
+    cfg = {"temperature": 0.1, "responseMimeType": "application/json"}
+    if _THINKING["ok"]:
+        cfg["thinkingConfig"] = {"thinkingLevel": "low"}  # faster answers; dropped automatically if unsupported
+    r = httpx.post(URL.format(model=model), params={"key": API_KEY},
+                   json={"contents": [{"role": "user", "parts": parts}], "generationConfig": cfg}, timeout=timeout)
+    if r.status_code == 400 and _THINKING["ok"] and "think" in r.text.lower():
+        _THINKING["ok"] = False
+        cfg.pop("thinkingConfig", None)
+        r = httpx.post(URL.format(model=model), params={"key": API_KEY},
+                       json={"contents": [{"role": "user", "parts": parts}], "generationConfig": cfg}, timeout=timeout)
+    return r
 
 
 def _err_msg(r) -> str:
@@ -89,6 +99,33 @@ def _err_msg(r) -> str:
 def _version(name: str) -> tuple:
     nums = re.findall(r"\d+(?:\.\d+)?", name)
     return tuple(float(n) for n in nums[:2]) or (0.0,)
+
+
+_models_cache: dict = {}
+
+
+def _list_models() -> list[str]:
+    if "names" in _models_cache:
+        return _models_cache["names"]
+    try:
+        r = httpx.get("https://generativelanguage.googleapis.com/v1beta/models", params={"key": API_KEY, "pageSize": 200}, timeout=15)
+        r.raise_for_status()
+        names = [m["name"].split("/", 1)[-1] for m in r.json().get("models", []) if "generateContent" in m.get("supportedGenerationMethods", [])]
+    except Exception:  # noqa: BLE001
+        names = []
+    _models_cache["names"] = names
+    return names
+
+
+def fallback_model() -> str | None:
+    """A fast backup model (prefer the newest Flash-Lite) for when the main model is overloaded."""
+    if "fallback" in _models_cache:
+        return _models_cache["fallback"]
+    names = [n for n in _list_models() if n != MODEL and "flash" in n and not any(b in n for b in ("image", "tts", "audio", "live", "embed", "exp", "preview"))]
+    lite = [n for n in names if "lite" in n]
+    pick = max(lite or names, key=_version) if (lite or names) else None
+    _models_cache["fallback"] = pick
+    return pick
 
 
 def discover_model() -> str | None:
@@ -117,6 +154,11 @@ def _call(parts: list, timeout: float = 40.0) -> str:
             log.warning("Gemini model %s unavailable; switching to %s", MODEL, new)
             MODEL = new
             r = _post(MODEL, parts, timeout)
+    if r.status_code in (500, 503):
+        fb = fallback_model()
+        if fb:
+            log.warning("Gemini %s overloaded (HTTP %s); retrying once with %s", MODEL, r.status_code, fb)
+            r = _post(fb, parts, min(timeout, 30))
     if r.status_code == 429:
         raise RuntimeError("AI quota reached")
     if r.status_code >= 400:
@@ -137,7 +179,17 @@ def _cached_json(kind: str, key_material: str, parts_fn, timeout=40.0) -> dict:
     if not _allow_call():
         return {"_error": "AI is busy (rate limit). Showing rule-based results only — try again in a minute."}
     try:
-        raw = _call(parts_fn(), timeout=timeout)
+        try:
+            raw = _call(parts_fn(), timeout=timeout)
+        except httpx.TimeoutException:
+            fb = fallback_model()
+            if not fb:
+                raise
+            log.warning("Gemini %s timed out; retrying once with %s", MODEL, fb)
+            r = _post(fb, parts_fn(), 25)
+            if r.status_code >= 400:
+                raise RuntimeError(f"AI service error (HTTP {r.status_code})")
+            raw = r.json()["candidates"][0]["content"]["parts"][0]["text"]
         data = json.loads(raw)
     except RuntimeError as e:
         return {"_error": f"{e}. Showing rule-based results only."}
@@ -259,6 +311,35 @@ def find_logo(image: bytes, mime: str, logo: bytes, logo_mime: str) -> dict:
         box = None
     return {"present": bool(data.get("present")), "altered": bool(data.get("altered")), "box": box,
             "notes": str(data.get("notes", ""))[:200], "model": MODEL}
+
+
+def read_creative(image: bytes, mime: str, logo: bytes | None, logo_mime: str | None) -> dict:
+    """One call for a poster: every text line with its box, an alt text, and (if a logo is given) whether it is present."""
+    logo_q = ('The FIRST image is the brand\'s approved logo; the SECOND image is the creative. Also report whether the approved logo appears '
+              'in the creative (it may be resized), and whether it looks altered (recoloured, stretched, cropped, redrawn). ') if logo else ""
+    prompt = (logo_q + "Read ALL visible text in the creative, line by line, exactly as written (keep ₹, %, numbers and Hindi). "
+              "Write one concise alt text (max 20 words) for screen-reader users. Return JSON "
+              '{"lines":[{"text":"...","box_2d":[ymin,xmin,ymax,xmax]}],"alt":"...",'
+              + ('"logo":{"present":true/false,"altered":true/false,"box_2d":[ymin,xmin,ymax,xmax] or null,"notes":"one short sentence"}' if logo else '"logo":null')
+              + "} with every box normalised to 0-1000. Use an empty list if there is no text.")
+    key = hashlib.sha256(image).hexdigest() + (hashlib.sha256(logo).hexdigest() if logo else "") + prompt
+    parts = (lambda: ([_img_part(logo, logo_mime)] if logo else []) + [_img_part(image, mime), {"text": prompt}])
+    data = _cached_json("creative", key, parts, timeout=45)
+    if "_error" in data:
+        return {"error": data["_error"]}
+    lines = []
+    for ln in data.get("lines", []) or []:
+        if not isinstance(ln, dict) or not str(ln.get("text", "")).strip():
+            continue
+        box = ln.get("box_2d") or ln.get("box")
+        box = [max(0, min(1000, float(v))) for v in box] if isinstance(box, list) and len(box) == 4 and all(isinstance(v, (int, float)) for v in box) else None
+        lines.append({"text": str(ln["text"]).strip()[:300], "box": box})
+    lg = data.get("logo") if isinstance(data.get("logo"), dict) else None
+    if lg:
+        b = lg.get("box_2d")
+        lg = {"present": bool(lg.get("present")), "altered": bool(lg.get("altered")),
+              "box": b if isinstance(b, list) and len(b) == 4 else None, "notes": str(lg.get("notes", ""))[:200]}
+    return {"lines": lines[:60], "alt": (str(data.get("alt") or "")[:200] or None), "logo": lg, "model": MODEL, "cached": bool(data.get("_cached"))}
 
 
 def describe_image(image_bytes: bytes, mime: str) -> str | None:

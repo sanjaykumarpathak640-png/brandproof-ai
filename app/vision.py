@@ -116,42 +116,43 @@ def analyse_creative(image_bytes: bytes, mime: str, logo_data_url: str | None, *
     out: dict = {"text": {"status": "skipped", "lines": [], "model": None, "reason": ""},
                  "logo": {"status": "skipped", "present": None, "method": None, "box": None, "score": None, "reason": ""}}
 
-    # 1) text inside the image
+    logo_bytes = logo_mime = None
+    if logo_data_url:
+        logo_bytes, logo_mime = decode_data_url(logo_data_url)
+
+    # 1) one AI call reads the text, drafts alt text and double-checks the logo
+    res = None
     if not use_ai:
         out["text"]["reason"] = "Confidential mode: the image was not sent to any AI service, so text inside it was not read."
     elif not ai.available():
         out["text"]["reason"] = "No AI key configured, so text inside the image could not be read."
     else:
-        res = ai.read_image_text(image_bytes, mime)
+        res = ai.read_creative(image_bytes, mime, logo_bytes, logo_mime)
         if res.get("error"):
             out["text"].update(status="error", reason=res["error"])
+            res = None
         else:
             lines = []
             for ln in res.get("lines", []):
                 box = ln.get("box")
-                c = box_contrast(img, box) if box else None
-                lines.append({"text": ln["text"], "box": box, "contrast": c})
+                lines.append({"text": ln["text"], "box": box, "contrast": box_contrast(img, box) if box else None})
             out["text"].update(status="ok", lines=lines, model=res.get("model"), cached=res.get("cached", False))
+            out["alt"] = res.get("alt")
 
-    # 2) logo
-    if logo_data_url:
-        logo_bytes, logo_mime = decode_data_url(logo_data_url)
-        logo = _img(logo_bytes)
-        tm = match_logo(img, logo)
-        out["logo"].update(status="ok", present=tm["present"], method="pixel match", box=tm["box"] if tm["present"] else None,
-                           score=tm["score"])
-        if not tm["present"] and use_ai and ai.available():
-            res = ai.find_logo(image_bytes, mime, logo_bytes, logo_mime)
-            if not res.get("error"):
-                out["logo"]["ai"] = res
-                if res.get("present"):
-                    out["logo"].update(present=True, method="vision model", box=res.get("box"), altered=res.get("altered"),
-                                       notes=res.get("notes", ""))
-                else:
-                    out["logo"]["notes"] = res.get("notes", "")
-                    out["logo"]["method"] = "pixel match + vision model"
-            else:
-                out["logo"]["reason"] = res["error"]
+    # 2) logo: pixel template matching first (no AI); the vision model's answer is used when pixels don't match
+    if logo_bytes:
+        tm = match_logo(img, _img(logo_bytes))
+        out["logo"].update(status="ok", present=tm["present"], method="pixel match", box=tm["box"] if tm["present"] else None, score=tm["score"])
+        ai_logo = (res or {}).get("logo")
+        if ai_logo:
+            out["logo"]["ai"] = ai_logo
+            if not tm["present"]:
+                out["logo"]["method"] = "pixel match + vision model"
+                out["logo"]["notes"] = ai_logo.get("notes", "")
+                if ai_logo.get("present"):
+                    out["logo"].update(present=True, method="vision model", box=ai_logo.get("box"), altered=ai_logo.get("altered"))
+            elif ai_logo.get("altered"):
+                out["logo"].update(altered=True, notes=ai_logo.get("notes", ""))
     else:
         out["logo"]["reason"] = "No approved logo in Brand Memory yet. The Brand Admin can upload one."
     return out

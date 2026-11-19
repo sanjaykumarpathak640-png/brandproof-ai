@@ -18,7 +18,16 @@ Runs on SQLite by default and on PostgreSQL with `DATABASE_URL=postgres://…` (
 | Accuracy | benchmark ≥ 200 samples, precision ≥ 0.95, rule-detectable recall ≥ 0.95 |
 
 ## 2. Accuracy benchmark — `python -m benchmark.run_benchmark`
-266 labelled samples (148 English, 71 Hinglish, 47 Hindi; digits, words, paraphrases, meaning-based). Results are also shown in the app (**Accuracy** page). The rules + AI comparison runs on the server on the hard subset.
+266 labelled samples (148 English, 71 Hinglish, 47 Hindi; digits, words, paraphrases, meaning-based). Results are also shown in the app (**Accuracy** page). The rules + AI comparison runs on the server on the 85-sample hard subset; a Brand Admin can start it from the Accuracy page (at most once every 6 hours).
+
+Live run on 19 Nov 2026 (gemini-3.8-flash was overloaded, so 74 answers came from the backup gemini-3.5-flash-lite; 2 failed calls counted as misses):
+
+| Hard subset (85) | Precision | Recall | F1 | Missed | False alarms |
+|---|---|---|---|---|---|
+| Rules only | 100% | 83.1% | 0.908 | 13 | 0 |
+| Rules + AI | 90.5% | 98.7% | 0.944 | 1 | 8 |
+
+Meaning-based (AI-only) claims: recall 0% → 92.3%.
 
 ## 3. End-to-end browser test — `tests/run_e2e.py` (Playwright)
 Starts from the landing page and drives a real browser through: demo → check → fix → submit → reviewer approve → certificate → reload → approve twice (409) → Hinglish → Compliance dismiss + clear → request changes → auto-fix → resubmit → poster check → impact preview → brand-book import → insights → accuracy → certificates → empty input → sign-up (short password rejected) → invite → join in a second browser → four-eyes refusal → approval with verified identity → cross-workspace access (404) → wrong password → login → mobile viewport. Run it against a server with fake AI: `python tests/fake_ai_server.py` then `python tests/run_e2e.py`.

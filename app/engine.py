@@ -9,6 +9,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from . import lang
+
 SEV_WEIGHT = {"high": 25, "medium": 10, "review": 4}
 SEV_ORDER = {"high": 0, "medium": 1, "review": 2}
 
@@ -125,6 +127,10 @@ def _overlaps(a, b):
 
 # ---------------------------------------------------------------- checks
 
+def _offer_context(t: str) -> bool:
+    return bool(lang.OFFER_WORDS.search(t))
+
+
 def check_prices(b: Builder):
     ctx, t = b.ctx, b.text
     price_f = ctx.fact("price")
@@ -132,17 +138,17 @@ def check_prices(b: Builder):
         return
     current = float(price_f["value"])
     max_disc = ctx.fval("max_discount", 0) or 0
-    offer_ctx = bool(re.search(r"\b(off|discount|sale|offer|deal|cashback)\b|%", t, re.I))
-    for m in re.finditer(r"(₹|\brs\.?|\binr)\s?(\d[\d,]*(?:\.\d+)?)(?:\s?(k)\b)?(?:/-)?", t, re.I):
-        val = _num(m.group(2)) * (1000 if m.group(3) else 1)
-        if val < 100:
+    offer_ctx = _offer_context(t)
+    for p in lang.find_prices(t):
+        val = p["value"]
+        if val < 100 or abs(val - current) < 0.5:
             continue
-        if abs(val - current) < 0.5:
-            continue
+        shown = p["text"].strip()
+        how = " (written in words)" if p["words"] else ""
         exp = next((f for f in ctx.expired if f["key"] == "price" and abs(float(f["value"]) - val) < 0.5), None)
         if exp:
-            b.add("R-PRC-01", m.start(), m.end(),
-                  f"{m.group(0).strip()} is an outdated price. It was valid until {exp['valid_to']}; the current approved price is {fmt_inr(current)}.",
+            b.add("R-PRC-01", p["start"], p["end"],
+                  f"{shown}{how} is an outdated price. It was valid until {exp['valid_to']}; the current approved price is {fmt_inr(current)}.",
                   replacement=fmt_inr(current), fix_note="Use the current approved price.",
                   fact=price_f, extra_evidence=[{**_ev_fact(exp), "ref": exp["id"] + " (expired)"}],
                   metric={"found": fmt_inr(val), "approved": fmt_inr(current), "status": "outdated"})
@@ -150,45 +156,44 @@ def check_prices(b: Builder):
         floor = current * (1 - max_disc / 100.0)
         if offer_ctx and floor - 0.5 <= val < current:
             continue  # valid offer price within the approved discount
-        b.add("R-PRC-01", m.start(), m.end(),
-              f"Price {m.group(0).strip()} does not match the approved price {fmt_inr(current)}"
+        b.add("R-PRC-01", p["start"], p["end"],
+              f"Price {shown}{how} does not match the approved price {fmt_inr(current)}"
               + (f" (lowest allowed offer price is {fmt_inr(floor)})." if max_disc else "."),
               replacement=fmt_inr(current), fix_note="Use the approved price.", fact=price_f,
               metric={"found": fmt_inr(val), "approved": fmt_inr(current)})
 
 
-DISC_PATTERNS = [
-    r"(?P<n>\d{1,3})\s?%\s?(?:off|discount|flat|cashback)",
-    r"(?:flat|up\s?to|upto|save)\s?(?P<n>\d{1,3})\s?%",
-]
-
-
 def check_discounts(b: Builder):
     ctx, t = b.ctx, b.text
     mf = ctx.fact("max_discount")
-    seen = []
-    any_offer = False
-    for pat in DISC_PATTERNS:
-        for m in re.finditer(pat, t, re.I):
-            any_offer = True
-            if any(m.start() < e and s < m.end() for s, e in seen):
+    found = lang.find_discounts(t)
+    if mf:
+        mx = int(float(mf["value"]))
+        for d in found:
+            n = d["value"]
+            if n <= mx:
                 continue
-            seen.append((m.start(), m.end()))
-            n = int(m.group("n"))
-            if mf and n > float(mf["value"]):
-                mx = int(float(mf["value"]))
-                ns, ne = m.span("n")
-                b.add("R-PRC-02", ns, ne,
-                      f"Discount of {n}% in “{m.group(0)}” exceeds the approved maximum of {mx}%.",
-                      replacement=str(mx), fix_note=f"Cap the discount at {mx}%.", fact=mf,
-                      metric={"found": f"{n}%", "limit": f"{mx}%"})
-    if re.search(r"\b(off|discount|sale|offer|deal|cashback)\b", t, re.I):
-        any_offer = True
-    if any_offer and not re.search(r"t\s?&\s?c|terms\s+(and|&)\s+conditions|conditions\s+apply", t, re.I):
+            nshow = f"{n:g}%"
+            if d.get("phrase"):
+                rep, s, e = f"up to {mx}% off", d["start"], d["end"]
+            elif d["words"]:
+                rep, s, e = f"{mx}", d["num_start"], d["num_end"]
+                tail = t[d["num_end"]:d["end"]]
+                if not tail.lstrip().startswith("%"):
+                    rep = f"{mx}"
+            else:
+                rep, s, e = str(mx), d["num_start"], d["num_end"]
+            b.add("R-PRC-02", s, e,
+                  f"Discount of {nshow} in “{d['text'].strip()}”" + (" (written in words)" if d["words"] else "")
+                  + f" exceeds the approved maximum of {mx}%.",
+                  replacement=rep, fix_note=f"Cap the discount at {mx}%.", fact=mf,
+                  metric={"found": nshow, "limit": f"{mx}%"})
+    if (found or _offer_context(t)) and not lang.DISCLAIMER.search(t):
         end = len(t.rstrip())
+        hindi = bool(re.search(r"[\u0900-\u097F]", t))
         b.add("R-PRC-03", end, end,
               "The content promotes an offer but has no “T&C apply” disclaimer.",
-              replacement=" T&C apply.", fix_note="Append the approved disclaimer.")
+              replacement=" शर्तें लागू।" if hindi else " T&C apply.", fix_note="Append the approved disclaimer.")
 
 
 def check_warranty(b: Builder):
@@ -197,16 +202,19 @@ def check_warranty(b: Builder):
     if not wf:
         return
     w = int(float(wf["value"]))
-    for m in re.finditer(r"\b(lifetime|life-long|lifelong)\s+warranty\b", t, re.I):
-        b.add("R-WAR-01", m.start(), m.end(), f"“{m.group(0)}” is not approved. The approved warranty is {w} years.",
-              replacement=f"{w}-year warranty", fix_note="Use the approved warranty period.", fact=wf,
+    hindi = bool(re.search(r"[\u0900-\u097F]", t))
+    for m in lang.LIFETIME.finditer(t):
+        b.add("R-WAR-01", m.start(), m.end(), f"“{m.group(0)}” promises a lifetime warranty, which is not approved. The approved warranty is {w} years.",
+              replacement=(f"{w} साल की वारंटी" if hindi else f"{w}-year warranty"), fix_note="Use the approved warranty period.", fact=wf,
               metric={"found": "lifetime", "approved": f"{w} years"})
-    for m in re.finditer(r"\b(\d{1,2})[- ]?(?:years?|yrs?)\s+(?:of\s+)?warranty\b|\bwarranty\s+of\s+(\d{1,2})\s+(?:years?|yrs?)\b", t, re.I):
-        n = int(m.group(1) or m.group(3))
-        if n != w:
-            b.add("R-WAR-01", m.start(), m.end(), f"Warranty of {n} years does not match the approved {w} years.",
-                  replacement=f"{w}-year warranty", fix_note="Use the approved warranty period.", fact=wf,
-                  metric={"found": f"{n} years", "approved": f"{w} years"})
+    for d in lang.find_warranty_years(t):
+        if any(f["start"] < d["end"] and d["start"] < f["end"] for f in b.findings):
+            continue
+        n = d["value"]
+        if abs(n - w) > 0.01:
+            b.add("R-WAR-01", d["start"], d["end"], f"Warranty of {n:g} years in “{d['text']}” does not match the approved {w} years.",
+                  replacement=(f"{w} साल की वारंटी" if hindi else f"{w}-year warranty"), fix_note="Use the approved warranty period.", fact=wf,
+                  metric={"found": f"{n:g} years", "approved": f"{w} years"})
 
 
 def check_specs(b: Builder):
@@ -214,24 +222,22 @@ def check_specs(b: Builder):
     bf = ctx.fact("battery_hours")
     if bf:
         approved = float(bf["value"])
-        pats = [r"(?P<n>\d{1,3})\s?\+?\s?(?:hours?|hrs?|h)\b(?:\s+of)?\s+(?:battery|playback|play\s?time|music)",
-                r"(?:battery(?:\s+life)?|playback|play\s?time)\D{0,20}?(?P<n>\d{1,3})\s?\+?\s?(?:hours?|hrs?|h)\b"]
-        seen = []
-        for pat in pats:
-            for m in re.finditer(pat, t, re.I):
-                ns, ne = m.span("n")
-                if any(ns < e and s < ne for s, e in seen):
-                    continue
-                seen.append((ns, ne))
-                n = float(m.group("n"))
-                if n > approved:
-                    b.add("R-SPEC-01", ns, ne, f"Battery claim of {int(n)} hours exceeds the tested value of {int(approved)} hours.",
-                          replacement=str(int(approved)), fix_note="Use the tested battery life.", fact=bf,
-                          metric={"found": f"{int(n)} h", "approved": f"{int(approved)} h"})
+        for d in lang.find_battery_hours(t):
+            n = d["value"]
+            if n > approved:
+                b.add("R-SPEC-01", d["num_start"], d["num_end"], f"Battery claim of {n:g} hours exceeds the tested value of {approved:g} hours.",
+                      replacement=f"{approved:g}", fix_note="Use the tested battery life.", fact=bf,
+                      metric={"found": f"{n:g} h", "approved": f"{approved:g} h"})
+        for m in lang.ENDLESS_BATTERY.finditer(t):
+            b.add("R-SPEC-01", m.start(), m.end(), f"“{m.group(0)}” implies unlimited battery life. The tested value is {approved:g} hours.",
+                  replacement=f"battery lasts up to {approved:g} hours", fix_note="State the tested battery life.", fact=bf,
+                  metric={"found": "unlimited (implied)", "approved": f"{approved:g} h"})
     ipf = ctx.fact("ip_rating")
     if ipf:
         ip = str(ipf["value"])
-        for m in re.finditer(r"\b(?:fully\s+)?water\s?-?proof\b", t, re.I):
+        for m in re.finditer(r"\b(?:fully\s+)?water\s?-?proof\b|वॉटरप्रूफ|waterproof", t, re.I):
+            if any(f["start"] < m.end() and m.start() < f["end"] for f in b.findings):
+                continue
             b.add("R-SPEC-01", m.start(), m.end(), f"“{m.group(0)}” overstates protection. The product is rated {ip} (splash resistant).",
                   replacement=f"splash-resistant ({ip})", fix_note="Describe the approved rating.", fact=ipf,
                   metric={"found": m.group(0), "approved": ip})
@@ -247,7 +253,7 @@ SUPERLATIVES = [
     r"(?<![\w#])(?:no\.?\s?1|#\s?1|number\s+one)(?:\s+(?P<noun>brand|earbuds|earphones|product|choice))?\b",
     r"\bbest[- ]in[- ](?:class|india|the\s+world|market)\b",
     r"\b(?:unbeatable|unmatched|world[- ]class)\b",
-]
+] + lang.SUPERLATIVES_HI
 
 
 def check_superlatives(b: Builder):
@@ -285,7 +291,7 @@ GUARANTEES = [
     (r"\b100\s?%\s+guarantee\b", lambda m: "our assurance"),
     (r"\bnever\s+fails\b", lambda m: "built to last"),
     (r"\bzero\s+defects?\b", lambda m: "quality-tested"),
-]
+] + [(p, (lambda r: (lambda m: r))(r)) for p, r in lang.GUARANTEES_HI]
 
 
 def check_guarantees(b: Builder):
@@ -332,7 +338,7 @@ HYPE = [
     (r"\bmind[- ]?blowing\b", "impressive"),
     (r"\bjaw[- ]?dropping\b", "remarkable"),
     (r"\bepic\b", "excellent"),
-]
+] + lang.HYPE_HI
 
 
 def check_voice(b: Builder):
@@ -349,7 +355,7 @@ def check_voice(b: Builder):
             continue
         b.add("R-VOICE-01", m.start(), m.end(), f"“{w}” is written in all caps, which reads as shouting.",
               replacement=w.capitalize(), fix_note="Use normal capitalisation.")
-    for m in re.finditer(r"\b(?:hurry(?:\s+up)?|last\s+chance|only\s+today|buy\s+now\s+or\s+(?:regret|cry)|don'?t\s+miss\s+out|limited\s+stock|grab\s+it\s+before\s+it'?s\s+gone)\b", t, re.I):
+    for m in re.finditer(r"\b(?:hurry(?:\s+up)?|last\s+chance|only\s+today|buy\s+now\s+or\s+(?:regret|cry)|don'?t\s+miss\s+out|limited\s+stock|grab\s+it\s+before\s+it'?s\s+gone)\b|" + lang.URGENCY_HI, t, re.I):
         b.add("R-VOICE-02", m.start(), m.end(), f"“{m.group(0)}” is pressure/urgency language. Reviewer should confirm it is allowed for this campaign.")
 
 

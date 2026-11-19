@@ -1,44 +1,2318 @@
 [
- {"text": "SoundPods Pro – Smart Technology for Everyday Life. Now ₹10,000 with a 2-year warranty.", "expect": []},
- {"text": "Back to college with SoundPods Pro: 30 hours of playback and IPX4 splash resistance. Up to 10% off for students. T&C apply.", "expect": []},
- {"text": "Get SoundPods Pro for ₹8,500 this Diwali with up to 15% off. T&C apply.", "expect": []},
- {"text": "Enjoy clear calls and a comfortable fit with SoundPods Pro, backed by a 2-year warranty.", "expect": []},
- {"text": "Visit your nearest ABC store to try SoundPods Pro today.", "expect": []},
- {"text": "SoundPods Pro is designed for everyday life, from your commute to your workout.", "expect": []},
- {"text": "Festive offer: up to 20% off on SoundPods Pro. T&C apply.", "expect": []},
- {"text": "SoundPods Pro gives you up to 30 hours of battery with the charging case.", "expect": []},
- {"text": "Buy SoundPods Pro for just ₹7,000 today.", "expect": ["R-PRC-01"]},
- {"text": "SoundPods Pro now ₹12,000 only.", "expect": ["R-PRC-01"]},
- {"text": "Get 50% OFF on SoundPods Pro. T&C apply.", "expect": ["R-PRC-02"]},
- {"text": "Flat 35% discount on SoundPods Pro this weekend. T&C apply.", "expect": ["R-PRC-02"]},
- {"text": "SoundPods Pro: up to 20% off this festive season.", "expect": ["R-PRC-03"]},
- {"text": "SoundPods Pro comes with a lifetime warranty.", "expect": ["R-WAR-01"]},
- {"text": "Relax with a 5-year warranty on SoundPods Pro.", "expect": ["R-WAR-01"]},
- {"text": "SoundPods Pro offers 40 hours of battery life.", "expect": ["R-SPEC-01"]},
- {"text": "Swim with SoundPods Pro – fully waterproof!", "expect": ["R-SPEC-01"]},
- {"text": "SoundPods Pro is rated IP68 for total protection.", "expect": ["R-SPEC-01"]},
- {"text": "ABC Electronics – India's No. 1 Brand for audio.", "expect": ["R-CLM-01"]},
- {"text": "SoundPods Pro: the best earbuds you can buy.", "expect": ["R-CLM-01"]},
- {"text": "Unbeatable sound from SoundPods Pro.", "expect": ["R-CLM-01"]},
- {"text": "100% guaranteed performance from SoundPods Pro.", "expect": ["R-CLM-02"]},
- {"text": "SoundPods Pro never fails, whatever you do.", "expect": ["R-CLM-02"]},
- {"text": "Looking for cheap earbuds? Try SoundPods Pro.", "expect": ["R-TERM-01"]},
- {"text": "ABC Earbuds are back in stock.", "expect": ["R-TERM-01"]},
- {"text": "Grab Sound Pods Pro at your nearest store.", "expect": ["R-TERM-02"]},
- {"text": "OMG, SoundPods Pro sounds amazing.", "expect": ["R-VOICE-01"]},
- {"text": "SoundPods Pro is INSANE value!!", "expect": ["R-VOICE-01"]},
- {"text": "Hurry, SoundPods Pro is selling fast.", "expect": ["R-VOICE-02"]},
- {"text": "Last chance to try SoundPods Pro in store.", "expect": ["R-VOICE-02"]},
- {"text": "Something exciting is coming: Project Falcon.", "expect": ["R-CONF-01"]},
- {"text": "The new SoundPods Max will launch soon.", "expect": ["R-CONF-01"]},
- {"text": "SoundPods Pro is designed with care for people who listen to music on long journeys, during busy work days, at the gym and late at night when everyone else in the house is asleep and quiet.", "expect": ["R-A11Y-01"]},
- {"text": "ABC Electronics – India's No. 1 Brand! Buy SoundPods Pro for just ₹7,000. Get 50% OFF. 100% guaranteed performance with lifetime warranty!!", "expect": ["R-CLM-01","R-PRC-01","R-PRC-02","R-CLM-02","R-WAR-01","R-VOICE-01","R-PRC-03"]},
- {"text": "OMG this weekend is INSANE! SoundPods Pro at ₹12,000 with a killer deal. Don't miss out!!", "expect": ["R-VOICE-01","R-PRC-01","R-TERM-01","R-VOICE-02","R-PRC-03"]},
- {"text": "Buy SoundPods Pro for Rs. 7 thousand only.", "expect": ["R-PRC-01"], "note": "price written in words"},
- {"text": "Get fifty percent off on SoundPods Pro. T&C apply.", "expect": ["R-PRC-02"], "note": "discount written in words"},
- {"text": "SoundPods Pro – covered by warranty for life.", "expect": ["R-WAR-01"], "note": "paraphrased warranty"},
- {"text": "SoundPods Pro: the top-rated earbuds of 2026.", "expect": ["R-CLM-01"], "note": "paraphrased superlative"},
- {"text": "With SoundPods Pro, your battery never runs out.", "expect": ["R-SPEC-01"], "note": "implied spec claim"},
- {"text": "Better than Brand X earbuds, which break in a month.", "expect": ["R-MSG-01"], "note": "competitor attack - needs AI"},
- {"text": "Our best-selling colour is back: SoundPods Pro in navy.", "expect": [], "note": "best-selling may be factual"}
+ {
+  "text": "SoundPods Pro – Smart Technology for Everyday Life. Now ₹10,000 with a 2-year warranty.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro – Smart Technology for Everyday Life. Now ₹10,000 with a 2-year warranty.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro – Smart Technology for Everyday Life. Now ₹10,000 with a 2-year warranty.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Enjoy clear calls and a comfortable fit with SoundPods Pro, backed by a 2-year warranty.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, enjoy clear calls and a comfortable fit with SoundPods Pro, backed by a 2-year warranty.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: enjoy clear calls and a comfortable fit with SoundPods Pro, backed by a 2-year warranty.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro gives you up to 30 hours of battery with the charging case.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro gives you up to 30 hours of battery with the charging case.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro gives you up to 30 hours of battery with the charging case.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Get SoundPods Pro for ₹8,500 with up to 15% off. T&C apply.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, get SoundPods Pro for ₹8,500 with up to 15% off. T&C apply.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: get SoundPods Pro for ₹8,500 with up to 15% off. T&C apply.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Festive offer: up to 20% off on SoundPods Pro. T&C apply.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, festive offer: up to 20% off on SoundPods Pro. T&C apply.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: festive offer: up to 20% off on SoundPods Pro. T&C apply.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Visit your nearest ABC store to try SoundPods Pro today.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, visit your nearest ABC store to try SoundPods Pro today.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: visit your nearest ABC store to try SoundPods Pro today.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro is splash-resistant (IPX4), so a little rain is no problem.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro is splash-resistant (IPX4), so a little rain is no problem.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro is splash-resistant (IPX4), so a little rain is no problem.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro: ten thousand rupees, two-year warranty, made for everyday listening.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro: ten thousand rupees, two-year warranty, made for everyday listening.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro: ten thousand rupees, two-year warranty, made for everyday listening.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro sirf ₹10,000 mein, do saal ki warranty ke saath.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro sirf ₹10,000 mein, do saal ki warranty ke saath.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro sirf ₹10,000 mein, do saal ki warranty ke saath.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro par 20 pratishat tak ki chhoot. T&C apply.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro par 20 pratishat tak ki chhoot. T&C apply.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro par 20 pratishat tak ki chhoot. T&C apply.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Roz ke liye bani SoundPods Pro – 30 ghante ki battery ke saath.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, roz ke liye bani SoundPods Pro – 30 ghante ki battery ke saath.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: roz ke liye bani SoundPods Pro – 30 ghante ki battery ke saath.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Apne nazdeeki ABC store par SoundPods Pro try kijiye.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, apne nazdeeki ABC store par SoundPods Pro try kijiye.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: apne nazdeeki ABC store par SoundPods Pro try kijiye.",
+  "expect": [],
+  "lang": "hinglish",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro अब ₹10,000 में, दो साल की वारंटी के साथ।",
+  "expect": [],
+  "lang": "hi",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro अब ₹10,000 में, दो साल की वारंटी के साथ।",
+  "expect": [],
+  "lang": "hi",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro अब ₹10,000 में, दो साल की वारंटी के साथ।",
+  "expect": [],
+  "lang": "hi",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro पर 20 प्रतिशत तक की छूट। शर्तें लागू।",
+  "expect": [],
+  "lang": "hi",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro पर 20 प्रतिशत तक की छूट। शर्तें लागू।",
+  "expect": [],
+  "lang": "hi",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro पर 20 प्रतिशत तक की छूट। शर्तें लागू।",
+  "expect": [],
+  "lang": "hi",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "रोज़ाना इस्तेमाल के लिए SoundPods Pro – 30 घंटे का प्लेबैक।",
+  "expect": [],
+  "lang": "hi",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, रोज़ाना इस्तेमाल के लिए SoundPods Pro – 30 घंटे का प्लेबैक।",
+  "expect": [],
+  "lang": "hi",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: रोज़ाना इस्तेमाल के लिए SoundPods Pro – 30 घंटे का प्लेबैक।",
+  "expect": [],
+  "lang": "hi",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Our best-selling colour is back: SoundPods Pro in navy.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, our best-selling colour is back: SoundPods Pro in navy.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: our best-selling colour is back: SoundPods Pro in navy.",
+  "expect": [],
+  "lang": "en",
+  "form": "clean",
+  "ai_only": false
+ },
+ {
+  "text": "Buy SoundPods Pro for just ₹7,000 today.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, buy SoundPods Pro for just ₹7,000 today.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: buy SoundPods Pro for just ₹7,000 today.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro now ₹12,000 only.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro now ₹12,000 only.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro now ₹12,000 only.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro at Rs 7k – grab yours.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro at Rs 7k – grab yours.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro at Rs 7k – grab yours.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Buy SoundPods Pro for seven thousand rupees.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, buy SoundPods Pro for seven thousand rupees.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: buy SoundPods Pro for seven thousand rupees.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro for Rs. 7 thousand only.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro for Rs. 7 thousand only.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro for Rs. 7 thousand only.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro sirf saat hazaar rupaye mein.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro sirf saat hazaar rupaye mein.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro sirf saat hazaar rupaye mein.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro ab barah hazaar rupaye mein.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro ab barah hazaar rupaye mein.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro ab barah hazaar rupaye mein.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro सिर्फ सात हज़ार रुपये में।",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro सिर्फ सात हज़ार रुपये में।",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro सिर्फ सात हज़ार रुपये में।",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro अब ₹७,००० में।",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro अब ₹७,००० में।",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro अब ₹७,००० में।",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro costs less than a weekend pizza party.",
+  "expect": [
+   "R-PRC-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "Get 50% OFF on SoundPods Pro. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, get 50% OFF on SoundPods Pro. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: get 50% OFF on SoundPods Pro. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Flat 35% discount on SoundPods Pro. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, flat 35% discount on SoundPods Pro. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: flat 35% discount on SoundPods Pro. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Get fifty percent off SoundPods Pro. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, get fifty percent off SoundPods Pro. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: get fifty percent off SoundPods Pro. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro at half price this week. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro at half price this week. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro at half price this week. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro par pachas pratishat chhoot. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro par pachas pratishat chhoot. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro par pachas pratishat chhoot. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro aadhe daam par! T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro aadhe daam par! T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro aadhe daam par! T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro पर पचास प्रतिशत की छूट। शर्तें लागू।",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro पर पचास प्रतिशत की छूट। शर्तें लागू।",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro पर पचास प्रतिशत की छूट। शर्तें लागू।",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro पर ५०% छूट। शर्तें लागू।",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro पर ५०% छूट। शर्तें लागू।",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro पर ५०% छूट। शर्तें लागू।",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Pay for one, take two SoundPods Pro home. T&C apply.",
+  "expect": [
+   "R-PRC-02"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "SoundPods Pro: up to 20% off this festive season.",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro: up to 20% off this festive season.",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro: up to 20% off this festive season.",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Festive sale on SoundPods Pro starts today.",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, festive sale on SoundPods Pro starts today.",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: festive sale on SoundPods Pro starts today.",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro par 20 pratishat tak ki chhoot.",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro par 20 pratishat tak ki chhoot.",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro par 20 pratishat tak ki chhoot.",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro पर 20 प्रतिशत की छूट।",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro पर 20 प्रतिशत की छूट।",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro पर 20 प्रतिशत की छूट।",
+  "expect": [
+   "R-PRC-03"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro comes with a lifetime warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro comes with a lifetime warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro comes with a lifetime warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Relax with a 5-year warranty on SoundPods Pro.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, relax with a 5-year warranty on SoundPods Pro.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: relax with a 5-year warranty on SoundPods Pro.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro – covered by warranty for life.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro – covered by warranty for life.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro – covered by warranty for life.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro par paanch saal ki warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro par paanch saal ki warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro par paanch saal ki warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro ke saath aajeevan warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro ke saath aajeevan warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro ke saath aajeevan warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro par zindagi bhar ki warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro par zindagi bhar ki warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro par zindagi bhar ki warranty.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro के साथ आजीवन वारंटी।",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hi",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro के साथ आजीवन वारंटी।",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hi",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro के साथ आजीवन वारंटी।",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hi",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro पर पांच साल की वारंटी।",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro पर पांच साल की वारंटी।",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro पर पांच साल की वारंटी।",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "A warranty that outlives your phone – only on SoundPods Pro.",
+  "expect": [
+   "R-WAR-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "SoundPods Pro offers 40 hours of battery life.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro offers 40 hours of battery life.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro offers 40 hours of battery life.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Swim with SoundPods Pro – fully waterproof.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, swim with SoundPods Pro – fully waterproof.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: swim with SoundPods Pro – fully waterproof.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro is rated IP68 for total protection.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro is rated IP68 for total protection.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro is rated IP68 for total protection.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "With SoundPods Pro, your battery never runs out.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, with SoundPods Pro, your battery never runs out.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: with SoundPods Pro, your battery never runs out.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro never needs charging on a normal day.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro never needs charging on a normal day.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro never needs charging on a normal day.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro mein chalis ghante ki battery.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro mein chalis ghante ki battery.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro mein chalis ghante ki battery.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro ki battery kabhi khatam nahi hoti.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro ki battery kabhi khatam nahi hoti.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro ki battery kabhi khatam nahi hoti.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro: बैटरी 40 घंटे।",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro: बैटरी 40 घंटे।",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro: बैटरी 40 घंटे।",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "One charge of SoundPods Pro lasts the whole week.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "Take SoundPods Pro scuba diving this summer.",
+  "expect": [
+   "R-SPEC-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "ABC Electronics – India's No. 1 Brand for audio.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, ABC Electronics – India's No. 1 Brand for audio.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: ABC Electronics – India's No. 1 Brand for audio.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro: the best earbuds you can buy.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro: the best earbuds you can buy.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro: the best earbuds you can buy.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Unbeatable sound from SoundPods Pro.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, unbeatable sound from SoundPods Pro.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: unbeatable sound from SoundPods Pro.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro: the top-rated earbuds of 2026.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro: the top-rated earbuds of 2026.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro: the top-rated earbuds of 2026.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro – sabse best earbuds.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro – sabse best earbuds.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro – sabse best earbuds.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "ABC – India ka number one audio brand.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, ABC – India ka number one audio brand.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: ABC – India ka number one audio brand.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "ABC – भारत का नंबर 1 ऑडियो ब्रांड।",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, ABC – भारत का नंबर 1 ऑडियो ब्रांड।",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: ABC – भारत का नंबर 1 ऑडियो ब्रांड।",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hi",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro – सबसे बेहतरीन ईयरबड्स।",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro – सबसे बेहतरीन ईयरबड्स।",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro – सबसे बेहतरीन ईयरबड्स।",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Nine out of ten music teachers prefer SoundPods Pro.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "No other earbuds come close to SoundPods Pro.",
+  "expect": [
+   "R-CLM-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "100% guaranteed performance from SoundPods Pro.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, 100% guaranteed performance from SoundPods Pro.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: 100% guaranteed performance from SoundPods Pro.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro never fails, whatever you do.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro never fails, whatever you do.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro never fails, whatever you do.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro – pakka result guarantee.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro – pakka result guarantee.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro – pakka result guarantee.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro – पक्की गारंटी।",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, SoundPods Pro – पक्की गारंटी।",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: SoundPods Pro – पक्की गारंटी।",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro will make you sleep better, guaranteed or nothing.",
+  "expect": [
+   "R-CLM-02"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "Looking for cheap earbuds? Try SoundPods Pro.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, looking for cheap earbuds? Try SoundPods Pro.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: looking for cheap earbuds? Try SoundPods Pro.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "ABC Earbuds are back in stock.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, ABC Earbuds are back in stock.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: ABC Earbuds are back in stock.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro is risk-free to try.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro is risk-free to try.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro is risk-free to try.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Cheap mein accha – SoundPods Pro.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, cheap mein accha – SoundPods Pro.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: cheap mein accha – SoundPods Pro.",
+  "expect": [
+   "R-TERM-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Grab Sound Pods Pro at your nearest store.",
+  "expect": [
+   "R-TERM-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, grab Sound Pods Pro at your nearest store.",
+  "expect": [
+   "R-TERM-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: grab Sound Pods Pro at your nearest store.",
+  "expect": [
+   "R-TERM-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Soundpods ab har ABC store par.",
+  "expect": [
+   "R-TERM-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, Soundpods ab har ABC store par.",
+  "expect": [
+   "R-TERM-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: Soundpods ab har ABC store par.",
+  "expect": [
+   "R-TERM-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "OMG, SoundPods Pro sounds amazing.",
+  "expect": [
+   "R-VOICE-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, OMG, SoundPods Pro sounds amazing.",
+  "expect": [
+   "R-VOICE-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: OMG, SoundPods Pro sounds amazing.",
+  "expect": [
+   "R-VOICE-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro is INSANE value!!",
+  "expect": [
+   "R-VOICE-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro is INSANE value!!",
+  "expect": [
+   "R-VOICE-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro is INSANE value!!",
+  "expect": [
+   "R-VOICE-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro – ekdum dhamakedar sound.",
+  "expect": [
+   "R-VOICE-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro – ekdum dhamakedar sound.",
+  "expect": [
+   "R-VOICE-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro – ekdum dhamakedar sound.",
+  "expect": [
+   "R-VOICE-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Hurry, SoundPods Pro is selling fast.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, hurry, SoundPods Pro is selling fast.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: hurry, SoundPods Pro is selling fast.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Last chance to try SoundPods Pro in store.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, last chance to try SoundPods Pro in store.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: last chance to try SoundPods Pro in store.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Jaldi karo, SoundPods Pro stock mein kam hai.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, jaldi karo, SoundPods Pro stock mein kam hai.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: jaldi karo, SoundPods Pro stock mein kam hai.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro – aakhri mauka store par try karne ka.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, SoundPods Pro – aakhri mauka store par try karne ka.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: SoundPods Pro – aakhri mauka store par try karne ka.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "सिर्फ आज: SoundPods Pro स्टोर पर देखें।",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "इस दिवाली, सिर्फ आज: SoundPods Pro स्टोर पर देखें।",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "नए साल पर: सिर्फ आज: SoundPods Pro स्टोर पर देखें।",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "If you wait, you will regret it forever – get SoundPods Pro.",
+  "expect": [
+   "R-VOICE-02"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "Something exciting is coming: Project Falcon.",
+  "expect": [
+   "R-CONF-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, something exciting is coming: Project Falcon.",
+  "expect": [
+   "R-CONF-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: something exciting is coming: Project Falcon.",
+  "expect": [
+   "R-CONF-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "The new SoundPods Max will launch soon.",
+  "expect": [
+   "R-CONF-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, the new SoundPods Max will launch soon.",
+  "expect": [
+   "R-CONF-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: the new SoundPods Max will launch soon.",
+  "expect": [
+   "R-CONF-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naya SoundPods Max jaldi aa raha hai.",
+  "expect": [
+   "R-CONF-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Is Diwali, naya SoundPods Max jaldi aa raha hai.",
+  "expect": [
+   "R-CONF-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Naye saal par: naya SoundPods Max jaldi aa raha hai.",
+  "expect": [
+   "R-CONF-01"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro is designed with care for people who listen to music on long journeys, during busy work days, at the gym and late at night when everyone else in the house is asleep and quiet.",
+  "expect": [
+   "R-A11Y-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "This Diwali, SoundPods Pro is designed with care for people who listen to music on long journeys, during busy work days, at the gym and late at night when everyone else in the house is asleep and quiet.",
+  "expect": [
+   "R-A11Y-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Weekend special: SoundPods Pro is designed with care for people who listen to music on long journeys, during busy work days, at the gym and late at night when everyone else in the house is asleep and quiet.",
+  "expect": [
+   "R-A11Y-01"
+  ],
+  "lang": "en",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "Better than Brand X earbuds, which break in a month.",
+  "expect": [
+   "R-MSG-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "Other earbuds will ruin your hearing – choose SoundPods Pro.",
+  "expect": [
+   "R-MSG-01"
+  ],
+  "lang": "en",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "Brand X waale earbuds ek mahine mein toot jaate hain, SoundPods Pro lijiye.",
+  "expect": [
+   "R-MSG-01"
+  ],
+  "lang": "hinglish",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "दूसरे ब्रांड के ईयरबड्स आपके कान खराब कर देंगे।",
+  "expect": [
+   "R-MSG-01"
+  ],
+  "lang": "hi",
+  "form": "paraphrase",
+  "ai_only": true
+ },
+ {
+  "text": "ABC Electronics – India's No. 1 Brand! Buy SoundPods Pro for just ₹7,000. Get 50% OFF. 100% guaranteed performance with lifetime warranty!!",
+  "expect": [
+   "R-CLM-01",
+   "R-PRC-01",
+   "R-PRC-02",
+   "R-CLM-02",
+   "R-WAR-01",
+   "R-VOICE-01",
+   "R-PRC-03"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "OMG this weekend is INSANE! SoundPods Pro at ₹12,000 with a killer deal. Don't miss out!!",
+  "expect": [
+   "R-VOICE-01",
+   "R-PRC-01",
+   "R-TERM-01",
+   "R-VOICE-02",
+   "R-PRC-03"
+  ],
+  "lang": "en",
+  "form": "digits",
+  "ai_only": false
+ },
+ {
+  "text": "SoundPods Pro sirf saat hazaar rupaye mein! Aadhe daam par, aajeevan warranty ke saath. Jaldi karo!",
+  "expect": [
+   "R-PRC-01",
+   "R-PRC-02",
+   "R-WAR-01",
+   "R-VOICE-02",
+   "R-PRC-03"
+  ],
+  "lang": "hinglish",
+  "form": "words",
+  "ai_only": false
+ },
+ {
+  "text": "सिर्फ सात हज़ार रुपये में SoundPods Pro! पचास प्रतिशत की छूट और आजीवन वारंटी। भारत का नंबर 1 ब्रांड।",
+  "expect": [
+   "R-PRC-01",
+   "R-PRC-02",
+   "R-WAR-01",
+   "R-CLM-01",
+   "R-PRC-03"
+  ],
+  "lang": "hi",
+  "form": "words",
+  "ai_only": false
+ }
 ]

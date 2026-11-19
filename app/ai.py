@@ -1,23 +1,37 @@
-"""Optional AI layer (Google Gemini) with redaction and an evidence verifier.
+"""Optional AI layer (Google Gemini): text review, image text reading, logo check and
+brand-book extraction — always behind redaction, an evidence verifier and a cache.
 
-The AI is only used for meaning-based checks (tone, paraphrased or implied claims)
-and for drafting suggestions. Every AI finding must quote text that really exists
-in the draft and cite a real rule ID from Brand Memory; anything else is dropped
-and counted, so reviewers can see how much the verifier filtered out.
+Rules the AI must follow:
+- A text finding is kept only if it quotes words that really exist in the draft and cites a
+  real rule ID from Brand Memory; anything else is dropped and counted.
+- Brand-book facts extracted by AI become *pending* candidates and are kept only if the
+  value really appears in the document.
+- Every call is cached by content hash, so repeating a check never costs a second call,
+  and a short-term rate limiter protects the free quota. On any failure the app falls back
+  to the deterministic rules and says so.
 """
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import os
 import re
+import threading
+import time
 
 import httpx
+
+from . import db
 
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip()
 URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+AI_CATEGORIES = {"voice", "messaging", "claims", "pricing", "warranty", "specs"}
+MAX_CALLS_PER_MIN = int(os.environ.get("AI_MAX_CALLS_PER_MIN", "12"))
 
-AI_CATEGORIES = {"voice", "messaging", "claims"}
+_calls: list[float] = []
+_rl_lock = threading.Lock()
 
 
 def available() -> bool:
@@ -26,6 +40,17 @@ def available() -> bool:
 
 def model_name() -> str:
     return MODEL if available() else "none (rules only)"
+
+
+def _allow_call() -> bool:
+    with _rl_lock:
+        t = time.time()
+        while _calls and t - _calls[0] > 60:
+            _calls.pop(0)
+        if len(_calls) >= MAX_CALLS_PER_MIN:
+            return False
+        _calls.append(t)
+        return True
 
 
 def redact(text: str, confidential_terms: list[str]) -> tuple[str, int]:
@@ -41,57 +66,80 @@ def redact(text: str, confidential_terms: list[str]) -> tuple[str, int]:
     return out, n
 
 
-def _call(prompt: str, timeout: float = 30.0) -> str:
-    r = httpx.post(
-        URL.format(model=MODEL),
-        params={"key": API_KEY},
-        json={
-            "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-            "generationConfig": {"temperature": 0.2, "responseMimeType": "application/json"},
-        },
-        timeout=timeout,
-    )
+def _call(parts: list, timeout: float = 40.0) -> str:
+    r = httpx.post(URL.format(model=MODEL), params={"key": API_KEY},
+                   json={"contents": [{"role": "user", "parts": parts}],
+                         "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}},
+                   timeout=timeout)
+    if r.status_code == 429:
+        raise RuntimeError("AI quota reached")
     r.raise_for_status()
     data = r.json()
     return data["candidates"][0]["content"]["parts"][0]["text"]
 
 
+def _cached_json(kind: str, key_material: str, parts_fn, timeout=40.0) -> dict:
+    """Call the model once per unique input; cache the parsed JSON."""
+    key = f"{kind}:{MODEL}:" + hashlib.sha256(key_material.encode()).hexdigest()
+    hit = db.cache_get(key)
+    if hit is not None:
+        hit["_cached"] = True
+        return hit
+    if not _allow_call():
+        return {"_error": "AI is busy (rate limit). Showing rule-based results only — try again in a minute."}
+    try:
+        raw = _call(parts_fn(), timeout=timeout)
+        data = json.loads(raw)
+    except RuntimeError as e:
+        return {"_error": f"{e}. Showing rule-based results only."}
+    except Exception as e:  # noqa: BLE001  network, timeout, bad JSON
+        return {"_error": f"AI call failed ({type(e).__name__}). Showing rule-based results only."}
+    if isinstance(data, list):
+        data = {"items": data}
+    db.cache_set(key, data)
+    return data
+
+
+def _img_part(data: bytes, mime: str) -> dict:
+    return {"inline_data": {"mime_type": mime or "image/png", "data": base64.b64encode(data).decode()}}
+
+
+# ---------------------------------------------------------------- text review
+
 def ai_review(text: str, brand: dict, existing: list[dict]) -> dict:
     info = {"used": False, "model": model_name(), "checked": 0, "dropped": 0, "merged": 0,
-            "redactions": 0, "findings": [], "error": None, "dropped_examples": []}
+            "redactions": 0, "findings": [], "error": None, "dropped_examples": [], "cached": False}
     if not available():
         info["error"] = "No GEMINI_API_KEY configured — deterministic rules only."
         return info
     red, n = redact(text, brand["meta"].get("confidential_terms") or [])
     info["redactions"] = n
     rules = [r for r in brand["rules"] if r.get("enabled", 1) and r["category"] in AI_CATEGORIES]
-    facts = [f"{f['id']}: {f['label']} = {f['value']} {f.get('unit') or ''}".strip() for f in brand["facts"] if f["status"] == "approved"]
-    prompt = f"""You are a strict brand-governance reviewer for the brand "{brand['meta'].get('brand_name')}".
-Brand voice: {brand['meta'].get('tone')}. Voice profile: {brand['meta'].get('voice_profile')}.
-Approved facts:\n- """ + "\n- ".join(facts) + """
-Rules you may cite (use ONLY these IDs):\n- """ + "\n- ".join(f"{r['id']} [{r['severity']}] {r['title']}: {r['description']}" for r in rules) + f"""
-
-Review the DRAFT below. Report only real problems about tone/voice, messaging or claims that are implied or paraphrased
-(exact number checks are already done elsewhere). For each problem return:
-- "rule_id": one of the IDs above
-- "quote": the EXACT words copied from the draft (5-120 characters, must appear verbatim)
-- "message": one short sentence explaining the issue
-- "replacement": a short rewrite of the quoted words that keeps the creator's purpose and follows the rules
-Return JSON: {{"findings": [ ... ]}}. Return an empty list if the draft is fine. Do not invent facts.
-
-DRAFT:
-\"\"\"{red}\"\"\""""
-    try:
-        raw = _call(prompt)
-        data = json.loads(raw)
-    except Exception as e:  # network, quota, bad JSON
-        info["error"] = f"AI call failed: {type(e).__name__}. Showing rule-based results only."
+    facts = [f"{f['id']}: {f['label']} = {f['value']} {f.get('unit') or ''}".strip()
+             for f in brand["facts"] if f["status"] == "approved" and not (f.get("valid_to") and f["valid_to"] < brand["today"])]
+    prompt = (f'You are a strict brand-governance reviewer for the brand "{brand["meta"].get("brand_name")}".\n'
+              f'Brand voice: {brand["meta"].get("tone")}. Voice profile: {brand["meta"].get("voice_profile")}.\n'
+              "Approved facts (current):\n- " + "\n- ".join(facts or ["(none)"]) + "\n"
+              "Rules you may cite (use ONLY these IDs):\n- " + "\n- ".join(f"{r['id']} [{r['severity']}] {r['title']}: {r['description']}" for r in rules) +
+              "\n\nThe DRAFT may be in English, Hindi (Devanagari) or Hinglish (Hindi in Roman script). Report only real problems: tone/voice, "
+              "messaging (e.g. attacking competitors, fear-based claims), and claims that are implied, paraphrased or written in words that "
+              "contradict the approved facts or have no evidence. For each problem return:\n"
+              '- "rule_id": one of the IDs above\n- "quote": the EXACT words copied from the draft (3-120 characters, must appear verbatim)\n'
+              '- "message": one short English sentence explaining the issue\n'
+              '- "replacement": a short rewrite of the quoted words in the same language as the draft that keeps the creator\'s purpose and follows the rules\n'
+              'Return JSON: {"findings": [ ... ]}. Return an empty list if the draft is fine. Do not invent facts.\n\nDRAFT:\n"""' + red + '"""')
+    data = _cached_json("review", prompt, lambda: [{"text": prompt}])
+    if "_error" in data:
+        info["error"] = data["_error"]
         return info
     info["used"] = True
-    items = data.get("findings", []) if isinstance(data, dict) else []
+    info["cached"] = bool(data.get("_cached"))
+    items = data.get("findings", data.get("items", [])) or []
     valid_ids = {r["id"]: r for r in rules}
     low = text.lower()
     for it in items:
+        if not isinstance(it, dict):
+            continue
         info["checked"] += 1
         quote = (it.get("quote") or "").strip()
         rid = (it.get("rule_id") or "").strip()
@@ -107,7 +155,7 @@ DRAFT:
             continue
         s = low.index(quote.lower())
         e = s + len(quote)
-        if any(f["start"] < e and s < f["end"] for f in existing + info["findings"]):
+        if any(f["start"] < e and s < f["end"] for f in existing + info["findings"] if f.get("target") not in ("image", "image_text")):
             info["merged"] += 1
             continue
         r = valid_ids[rid]
@@ -116,39 +164,97 @@ DRAFT:
             "rule_id": rid, "category": r["category"], "severity": r["severity"] if r["severity"] != "high" else "medium",
             "title": r["title"], "quote": text[s:e], "start": s, "end": e,
             "message": (it.get("message") or "").strip()[:300],
-            "evidence": [{"ref": r["id"], "text": r["title"] + ": " + (r.get("description") or ""), "source": r.get("source", "")}],
-            "fix": {"replacement": rep, "note": "AI-suggested rewrite (AI-assisted)"} if isinstance(rep, str) else None,
+            "evidence": [{"ref": r["id"], "text": r["title"] + ": " + (r.get("description") or ""), "source": r.get("source", "")},
+                         {"ref": "AI quote check", "text": "Quoted words verified to exist in the draft.", "source": MODEL}],
+            "fix": {"replacement": rep, "note": "AI-suggested rewrite (AI-assisted)"} if isinstance(rep, str) and rep.strip() else None,
             "engine": "ai",
         })
     return info
 
+
+# ---------------------------------------------------------------- images
+
+def read_image_text(image: bytes, mime: str) -> dict:
+    prompt = ("Read ALL visible text in this marketing image, line by line, exactly as written (keep ₹, %, numbers, Hindi). "
+              'Return JSON {"lines":[{"text":"...","box_2d":[ymin,xmin,ymax,xmax]}]} where box_2d is normalised to 0-1000. '
+              'If there is no text return {"lines":[]}.')
+    h = hashlib.sha256(image).hexdigest()
+    data = _cached_json("ocr", h + prompt, lambda: [_img_part(image, mime), {"text": prompt}], timeout=60)
+    if "_error" in data:
+        return {"error": data["_error"]}
+    lines = []
+    for ln in data.get("lines", data.get("items", [])) or []:
+        if not isinstance(ln, dict) or not str(ln.get("text", "")).strip():
+            continue
+        box = ln.get("box_2d") or ln.get("box")
+        if isinstance(box, list) and len(box) == 4 and all(isinstance(v, (int, float)) for v in box):
+            box = [max(0, min(1000, float(v))) for v in box]
+        else:
+            box = None
+        lines.append({"text": str(ln["text"]).strip()[:300], "box": box})
+    return {"lines": lines[:60], "model": MODEL, "cached": bool(data.get("_cached"))}
+
+
+def find_logo(image: bytes, mime: str, logo: bytes, logo_mime: str) -> dict:
+    prompt = ("The FIRST image is a brand's approved logo. The SECOND image is a marketing creative. Is the approved logo present in "
+              "the creative (it may be resized)? Is it altered (recoloured, stretched, cropped, different design)? "
+              'Return JSON {"present": true/false, "altered": true/false, "box_2d": [ymin,xmin,ymax,xmax] (0-1000, or null), "notes": "one short sentence"}.')
+    key = hashlib.sha256(image).hexdigest() + hashlib.sha256(logo).hexdigest() + prompt
+    data = _cached_json("logo", key, lambda: [_img_part(logo, logo_mime), _img_part(image, mime), {"text": prompt}], timeout=60)
+    if "_error" in data:
+        return {"error": data["_error"]}
+    box = data.get("box_2d")
+    if not (isinstance(box, list) and len(box) == 4):
+        box = None
+    return {"present": bool(data.get("present")), "altered": bool(data.get("altered")), "box": box,
+            "notes": str(data.get("notes", ""))[:200], "model": MODEL}
+
+
+def describe_image(image_bytes: bytes, mime: str) -> str | None:
+    if not available():
+        return None
+    prompt = 'Write one concise alt text (max 20 words) describing this marketing image for screen-reader users. Return JSON {"alt": "..."}.'
+    data = _cached_json("alt", hashlib.sha256(image_bytes).hexdigest() + prompt, lambda: [_img_part(image_bytes, mime), {"text": prompt}])
+    return None if "_error" in data else (data.get("alt") or None)
+
+
+# ---------------------------------------------------------------- brand memory helpers
 
 def suggest_rule(rule: dict, reasons: list[str]) -> str | None:
     if not available():
         return None
     prompt = (f"A brand rule is often dismissed by reviewers. Rule {rule['id']}: {rule['title']} — {rule['description']}.\n"
               f"Reviewer reasons: {json.dumps(reasons[:8])}.\nWrite a clearer version of this rule (max 45 words) with an explicit "
-              "exception or example that resolves the confusion. Return JSON {\"rule\": \"...\"}.")
-    try:
-        return json.loads(_call(prompt, timeout=20)).get("rule")
-    except Exception:
-        return None
+              'exception or example that resolves the confusion. Return JSON {"rule": "..."}.')
+    data = _cached_json("rule", prompt, lambda: [{"text": prompt}], timeout=25)
+    return None if "_error" in data else data.get("rule")
 
 
-def describe_image(image_bytes: bytes, mime: str) -> str | None:
-    """Draft alt text for an image (vision model). Returns None when AI is unavailable."""
+FACT_KEYS = {"price": "Product price (MRP) in INR, number only", "max_discount": "Maximum discount percent, number only",
+             "warranty_years": "Warranty in years, number only", "battery_hours": "Battery life in hours, number only",
+             "ip_rating": "Water resistance rating like IPX4", "tagline": "Approved tagline", "product_name": "Official product name"}
+
+
+def extract_brand_facts(text: str) -> dict:
+    """Free-form brand books: ask the model for facts/terms; every value must appear in the document."""
     if not available():
-        return None
-    import base64
-    try:
-        r = httpx.post(
-            URL.format(model=MODEL), params={"key": API_KEY},
-            json={"contents": [{"role": "user", "parts": [
-                {"inline_data": {"mime_type": mime, "data": base64.b64encode(image_bytes).decode()}},
-                {"text": "Write one concise alt text (max 20 words) describing this marketing image for screen-reader users. Return JSON {\"alt\": \"...\"}."}]}],
-                "generationConfig": {"temperature": 0.2, "responseMimeType": "application/json"}},
-            timeout=30)
-        r.raise_for_status()
-        return json.loads(r.json()["candidates"][0]["content"]["parts"][0]["text"]).get("alt")
-    except Exception:
-        return None
+        return {"error": "No AI key configured."}
+    doc = text[:15000]
+    prompt = ("Extract brand facts from this brand book. Keys: " + json.dumps(FACT_KEYS) +
+              '. Also extract terminology rules (words to avoid and what to use instead) and confidential/internal names. '
+              'Return JSON {"facts":[{"key":"...","value":"...","quote":"exact sentence from the document"}],'
+              '"terms":[{"avoid":"...","prefer":"...","quote":"..."}],"confidential":[{"term":"...","quote":"..."}]}. '
+              "Only include items clearly stated in the document.\n\nDOCUMENT:\n" + doc)
+    data = _cached_json("bookx", prompt, lambda: [{"text": prompt}], timeout=60)
+    if "_error" in data:
+        return {"error": data["_error"]}
+    low = text.lower()
+
+    def ok(item, field):
+        v = str(item.get(field, "")).strip()
+        q = str(item.get("quote", "")).strip()
+        return v and v.lower().replace(",", "") in low.replace(",", "") and (not q or q[:40].lower() in low)
+    facts = [f for f in data.get("facts", []) if isinstance(f, dict) and f.get("key") in FACT_KEYS and ok(f, "value")]
+    terms = [t for t in data.get("terms", []) if isinstance(t, dict) and ok(t, "avoid") and str(t.get("prefer", "")).strip()]
+    conf = [c for c in data.get("confidential", []) if isinstance(c, dict) and ok(c, "term")]
+    return {"facts": facts, "terms": terms, "confidential": conf}

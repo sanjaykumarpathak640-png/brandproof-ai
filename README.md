@@ -1,106 +1,120 @@
 # BrandProof AI
 
 **Every claim checked. Every flag proven.**
-BrandProof AI checks marketing content against an organisation's approved facts, rules, terminology and palette *before* it is published. Every issue shows the exact guideline or fact behind it, plus a fix that keeps the creator's message. A human always approves, and every approval is sealed in a hash-chained **Proof Certificate**.
 
-Built by **Team Bug Hunters (IIT Patna)** for the *Inkloom AI* brand-governance problem statement. This is the Round 2 MVP.
+BrandProof AI checks marketing content — posts, ads, emails, PDFs, Word files and **posters** — against an organisation's approved facts, rules, terminology, logo and colour palette *before* it is published. It works in **English, Hindi and Hinglish**. Every issue shows the exact guideline or fact behind it and a fix that keeps the creator's message. A person always approves, and every approval is sealed in a hash-chained **Proof Certificate** that records the verified approvers.
 
-> Demo brand: **ABC Electronics** (fictional). All people in the sample data are fictional.
+Built by **Team Bug Hunters (IIT Patna)** for the *Inkloom AI* brand-governance problem statement.
+
+- **Live:** https://brandproof-ai-ddlp.onrender.com — click **“Try the demo — no sign-up”**
+- **API docs:** `/docs` (OpenAPI) · **Accuracy report:** `/#/accuracy`
+- More docs: [User guide](docs/USER_GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Testing](docs/TESTING.md) · [Roadmap](docs/ROADMAP.md) · [Changelog](CHANGELOG.md)
+
+> The demo brand **ABC Electronics** and all sample people are fictional.
 
 ---
 
-## What works end-to-end
+## Quick start (local, 2 minutes)
 
-| Step | What happens |
-|---|---|
-| **1. Brand Memory** | Versioned facts (price, max discount, warranty, battery, IP rating, tagline, product name), each with a source and validity dates. Also rules (with severity and source), terminology, palette and confidential terms. The admin can import a brand-book PDF/DOCX/TXT. Extracted facts and terms become *pending candidates* until the admin approves them, and each approval creates a new Brand Memory version. |
-| **2. Check** | Paste text, or upload PDF / DOCX / TXT / PNG / JPG. Deterministic checks run in code: prices (incl. **outdated** prices from expired facts), discount limits, T&C disclaimer, warranty, specs, superlatives, absolute guarantees, terminology, product name, hype / caps / `!!`, urgency, confidential terms and sentence length. For images: colour palette (**ΔE** distance), estimated contrast and missing alt text. PDF findings show **page · paragraph**. |
-| **3. AI review (optional)** | When `GEMINI_API_KEY` is set, Gemini reviews tone, messaging and implied claims. An **evidence verifier** keeps an AI finding only if it quotes text that really exists in the draft and cites a real rule ID. Everything else is dropped, and the drop count is shown on screen. Emails, phone numbers and confidential terms are masked before sending. **Confidential mode** sends nothing to any AI service. |
-| **4. Explainable report** | 0–100 risk score with a per-category breakdown. Each finding has a highlight in the text, severity, rule ID, message, measured value vs. approved value, the evidence (rule + fact + source) and a suggested fix. |
-| **5. Fix + Purpose Guard** | Creators accept fixes one by one. Each fix replaces only the flagged words. **Purpose Guard** confirms the brand/product, call-to-action, offer and goal words are still present, and the revised text is re-checked automatically. |
-| **6. BrandFlow approval** | Creator → **Compliance** (when high-severity issues exist) → **Reviewer** → approved. Rules are enforced on the server: a creator cannot dismiss a high-severity finding, only Compliance can, and only with a reason. Only a Reviewer can approve. Reviewers can request changes or reject, and the creator can resubmit a new version, which is re-checked. Includes comments, version history with diff, and a full audit trail. |
-| **7. Proof Certificate** | Approval issues a certificate with the SHA-256 hash of the content, the Brand Memory version, every decision with its reason, the approvers and the AI model used. Each certificate includes the previous certificate's hash, so the chain can be re-verified at any time. *Verify* tells you whether a piece of text is exactly the approved version. |
-| **8. Insights** | Most repeated mistakes, issues by creator/agency and channel, and **Guideline health**: rules that reviewers often dismiss or creators contest are marked *unclear*. The app drafts a clearer version of the rule (AI or template), which the admin can apply. |
-| **9. Trust & feedback** | Explains how AI and data are used and lists the libraries, plus a built-in user-testing feedback form. |
-
-Use the **“Acting as”** menu (top-right) to switch between Creator, Compliance, Reviewer and Brand Admin. No sign-up is needed for the demo.
-
-## Run locally
+Requirements: **Python 3.11+** (3.12 recommended). Nothing else — SQLite is used automatically.
 
 ```bash
-python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+git clone https://github.com/sanjaykumarpathak640-png/brandproof-ai.git
+cd brandproof-ai
+python -m venv .venv
+source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-# optional: export GEMINI_API_KEY=your_key
 uvicorn app.main:app --reload
-# open http://localhost:8000   ·   API docs at http://localhost:8000/docs
 ```
 
-The SQLite database is created and seeded automatically on first start (`data/brandproof.db`). Delete that file to reset the demo.
+Open **http://localhost:8000** and click **Try the demo**. A private sandbox with the ABC Electronics brand and sample history is created for you.
+
+Optional AI (tone review, reading text in images, logo fallback, free-form brand-book import):
+
+```bash
+export GEMINI_API_KEY=your_key       # Windows PowerShell: $env:GEMINI_API_KEY="your_key"
+uvicorn app.main:app --reload
+```
+
+Without a key every rule-based check still works, and the app says clearly which AI features were skipped.
+
+### Configuration
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `GEMINI_API_KEY` | *(empty)* | Enables the AI layer (Google Gemini). |
+| `GEMINI_MODEL` | `gemini-2.5-flash` | Model name. |
+| `DATABASE_URL` | *(empty)* | `postgres://…` to use PostgreSQL. Empty → SQLite. |
+| `DB_PATH` | `data/brandproof.db` | SQLite file location. |
+| `ADMIN_TOKEN` | *(empty)* | Protects `POST /api/benchmark/run`. |
+| `AI_MAX_CALLS_PER_MIN` | `12` | Rate limit that protects the free AI quota. |
 
 ## Deploy on Render (free)
 
-1. Push this folder to a public GitHub repo.
-2. In Render, choose **New → Blueprint** and select the repo. `render.yaml` is detected automatically.
-   (Or **New → Web Service**: build `pip install -r requirements.txt`, start `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.)
-3. Optional: add the environment variable `GEMINI_API_KEY`.
-4. Open the URL. Health check: `/api/health`.
+1. Fork or push this repo to GitHub (public).
+2. Render → **New → Blueprint** → select the repo. `render.yaml` creates a **free PostgreSQL database** and the **web service**, and wires `DATABASE_URL` automatically.
+3. Set `GEMINI_API_KEY` (optional) in the service's Environment tab.
+4. Open the service URL. Health check: `/api/health` (shows `"db": "postgres"`).
 
-Note: on Render's free plan the disk is temporary, so the demo database re-seeds after each restart or redeploy.
+Notes: Render's free web service sleeps when idle (first request can take ~50 s; the app shows a “waking up” message). Render's free PostgreSQL is for evaluation use.
 
-## Tests & benchmark
+## What it does
+
+| Area | Features |
+|---|---|
+| **Accounts & teams** | Email + password sign-up (scrypt-hashed), team workspaces, invite links with roles (Creator, Compliance, Reviewer, Brand Admin), role management, HTTP-only session cookies. **Demo sandboxes:** one private workspace per visitor with a guided tour; deleted after 48 h idle. |
+| **Brand Memory** | Versioned facts with source and validity dates (expired facts kept to catch outdated info), rules with severity and source, terminology, confidential terms, colour palette, approved logo, brand voice. Brand-book import (PDF/DOCX/TXT): patterns for “Label: value” lines, AI for free-form books — every value must appear in the document — all as *pending* candidates for the admin. |
+| **Impact preview** | Before changing a fact, term, rule or confidential list, see which *already-approved* content would now be flagged. |
+| **Text checks** | 15+ deterministic rules: price (digits or words; **outdated** prices), discount limit (incl. “half price”, “aadhe daam”), T&C disclaimer, warranty (incl. lifetime/paraphrased), battery (incl. “never runs out”), IP rating, superlatives, guarantees, terminology, product name, hype, urgency, confidential leaks, long sentences — **English, Hindi (Devanagari) and Hinglish**. PDF findings show page and paragraph. |
+| **Creative (image) checks** | Text inside the image read by the vision model and run through the **same rules**, with boxes drawn on the image; **contrast measured per text block**; **logo presence** by pixel template matching (no AI) with a vision-model fallback; palette ΔE; alt text (with an AI draft). |
+| **AI layer** | Gemini judges tone, messaging and implied claims. **Evidence verifier**: an AI finding is kept only if it quotes real text and cites a real rule; drops are counted on screen. Redaction of emails/phones/confidential terms; **Confidential mode** sends nothing; results cached by content hash; rate-limited; graceful fallback to rules. |
+| **Fixes** | Accept fixes one by one; only flagged words change; **Purpose Guard** checks the product, offer, call-to-action and goal words survive; automatic re-check; word-level diff. |
+| **Workflow** | Creator → Compliance (if high-risk) → Reviewer, enforced on the server. High-severity findings can be dismissed only by Compliance with a reason. **Four-eyes rule:** nobody approves their own submission in a team. Request changes, reject, resubmit as a new version, comments, audit trail, “next step” banner. Double submits/approvals are refused (idempotent). |
+| **Proof Certificates** | SHA-256 content hash, Brand Memory version, every decision, verified approver identities, AI model; hash-chained per workspace; chain re-verification and “is this the approved text?”. |
+| **Insights** | Repeated mistakes, issues by creator and channel, **guideline health** (rules reviewers keep overriding → “unclear”) with a drafted clearer rule. |
+| **Accuracy** | 266-sample labelled benchmark (EN/HI/Hinglish; digits, words, paraphrase, meaning-based) with an in-app report: rules-only vs rules + AI. |
+
+## Tests
 
 ```bash
 pip install -r requirements-dev.txt
-pytest -q                          # 12 tests: rules, fixes, workflow permissions, certificate chain, import, image, AI verifier, redaction
-python -m benchmark.run_benchmark  # rule-engine accuracy on 42 labelled samples → benchmark/results.json
+pytest -q                                   # 31 tests, SQLite, no network (AI is mocked)
+DATABASE_URL=postgres://… pytest -q         # same suite on PostgreSQL
+python -m benchmark.run_benchmark           # accuracy report → benchmark/results.json
+python -m benchmark.run_benchmark --ai      # + rules vs rules+AI on the hard subset (needs GEMINI_API_KEY)
 ```
+
+See [docs/TESTING.md](docs/TESTING.md) for the end-to-end browser test and the manual test checklist.
 
 ## Project structure
 
 ```
 app/
-  main.py      FastAPI routes (REST API + static frontend)
-  engine.py    deterministic rule engine, risk score, fix application, Purpose Guard
-  ai.py        optional Gemini layer: redaction, evidence verifier, rule & alt-text drafts
-  service.py   checks, BrandFlow workflow, insights, brand-book import
-  certs.py     hash-chained Proof Certificates
-  extract.py   PDF/DOCX/TXT extraction, image colour (ΔE) and contrast analysis
-  db.py        SQLite schema & helpers
-  seed.py      demo Brand Memory + sample review history
-static/        index.html, app.js, styles.css, samples/ (PDF, DOCX, images to try)
-benchmark/     labelled samples + accuracy script
-tests/         pytest suite
+  main.py              FastAPI app: REST API, auth context, error handling, static frontend
+  auth.py              accounts, workspaces, invites, sessions, demo sandboxes, roles
+  db.py                SQLite / PostgreSQL storage layer (every table scoped by org_id)
+  engine.py            deterministic rule engine, risk score, fixes, Purpose Guard
+  lang.py              numbers & claims in words: English, Hinglish, Hindi (Devanagari)
+  vision.py            text in images + per-box contrast, logo template matching
+  ai.py                Gemini: review, OCR, logo, alt text, brand-book extraction; verifier, cache, rate limit
+  service.py           checks, workflow, insights, brand-book import, impact preview
+  certs.py             hash-chained Proof Certificates
+  extract.py           PDF/DOCX/TXT extraction, palette ΔE, contrast maths
+  seed.py              demo brand (ABC Electronics) + sample history
+  benchmark_runner.py  accuracy scoring used by CLI and the Accuracy page
+static/                index.html, app.js (core), pages.js (pages), styles.css, samples/
+benchmark/             build_samples.py, samples.json (266), run_benchmark.py, results.json
+tests/                 test_brandproof.py (pytest), run_e2e.py (Playwright) + fake_ai_server.py
+docs/                  USER_GUIDE, ARCHITECTURE, TESTING, ROADMAP
 ```
-
-## Main API endpoints
-
-| Method | Path | Purpose |
-|---|---|---|
-| GET | `/api/health` | status, AI model, Brand Memory version |
-| GET | `/api/brand` | full Brand Memory, versions and pending candidates |
-| POST | `/api/check` | check text and/or image → findings, risk, AI verifier stats |
-| POST | `/api/extract` | upload PDF/DOCX/TXT/image → text or image data |
-| POST | `/api/fix` | apply accepted fixes → revised text, Purpose Guard, re-check |
-| GET/POST | `/api/submissions` | list / submit for review |
-| POST | `/api/submissions/{id}/action` | dismiss, clear_claims, approve, reject, request_changes, resubmit, comment |
-| POST | `/api/brand/import` | extract candidates from a brand book (admin) |
-| POST | `/api/brand/candidates/{id}/approve\|reject` | admin decision |
-| POST | `/api/brand/facts`, `/api/brand/terms`, `/api/brand/rules/{id}/update` | edit Brand Memory (admin) |
-| GET | `/api/insights`, POST `/api/insights/suggest/{rule}` | analytics and clearer-rule drafts |
-| GET | `/api/certificates`, POST `/api/certificates/verify` | certificate chain and text verification |
-| GET/POST | `/api/feedback` | user-testing feedback |
-
-## Tech stack
-
-Python 3.12 · FastAPI · Uvicorn · Pydantic · SQLite · pypdf · python-docx · Pillow · httpx → Google Gemini API (optional) · vanilla HTML/CSS/JS · Render.
 
 ## Team Bug Hunters — IIT Patna
 
 | Member | Role |
 |---|---|
-| Ayush Kumar (Team Leader) | AI & architecture: governance engine, verification pipeline, risk score |
-| Akanksha Mishra | Backend: APIs, database, roles & approval workflow |
-| Shiksha Rawat | Frontend: checker, highlighted report, review queue |
-| Mahima Kumari | UI/UX & accessibility module |
+| Ayush Kumar (Team Leader) | AI & architecture: governance engine, AI verifier, vision pipeline |
+| Akanksha Mishra | Backend: APIs, database, accounts & approval workflow |
+| Shiksha Rawat | Frontend: checker, review pages, guided demo |
+| Mahima Kumari | UI/UX & accessibility |
 | Md Akil Akhtar | Document & image processing, deployment |
 | Antra Priyadarshini | Research, benchmark dataset, testing & documentation |

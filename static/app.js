@@ -261,14 +261,18 @@ function bindDoc(root, prefix) {
 }
 
 /* ---------------------------------------------------------------- header & auth */
+const isLanding = () => location.hash.replace(/^#\/?/, "").split("/")[0] === "";
 function renderHeader() {
   const me = S.me;
   $("#nav").hidden = !me;
-  document.body.classList.toggle("app-mode", !!me);
-  $("#pubnav").hidden = !!me;
+  document.body.classList.toggle("app-mode", !!me && !isLanding());
+  $("#pubnav").hidden = !!me && !isLanding();
+  $("#nav").hidden = !me || isLanding();
+  $("#ws").hidden = isLanding();
   $("#ws").innerHTML = me ? `<span class="wsname" title="Workspace">${esc(me.org_name)}</span>${me.demo ? '<span class="tag demo">demo sandbox</span>' : '<span class="tag ok">team</span>'}` : "";
   const rb = $("#rolebox");
   if (!me) { rb.innerHTML = `<a class="btn sm" href="#/signin">Sign in</a>`; return; }
+  if (isLanding()) { rb.innerHTML = `<a class="btn sm" href="#/home">Open workspace</a>`; return; }
   rb.innerHTML = `<label for="role" class="muted small">Acting as</label>
     <select id="role" aria-label="Acting role">${me.roles.map((r) => `<option value="${r}" ${r === S.role ? "selected" : ""}>${ROLE_LABEL[r]}${me.demo ? " · " + DEMO_PEOPLE[r] : ""}</option>`).join("")}</select>
     <button class="btn sm ghost" id="signout" title="${me.demo ? "Leave the demo" : "Sign out"}">${me.demo ? "Exit demo" : "Sign out"}</button>`;
@@ -304,8 +308,8 @@ async function startDemo(btn) {
 /* ---------------------------------------------------------------- landing & auth pages */
 const TRY_TEXT = "SoundPods Pro ab sirf saat hazaar rupaye mein! Aadhe daam ka Diwali offer, aajeevan warranty ke saath. Jaldi karo, stock khatam hone wala hai!";
 async function landing() {
-  if (S.me) return home();
   document.body.classList.add("landing");
+  const inWs = !!S.me;
   const r = SAMPLES.risky.text;
   $("#app").innerHTML = `
   <section class="hero2">
@@ -315,10 +319,10 @@ async function landing() {
         <h1>Catch the wrong price before your customers do.</h1>
         <p class="lead">BrandProof reads every caption, poster and brochure against your approved facts, rules and logo. Each problem comes with the guideline it breaks, where that guideline came from, and a fix that keeps your message. A person approves, and the approval is sealed in a Proof Certificate.</p>
         <div class="row" style="margin-top:22px">
-          <button class="btn pri big" id="go-demo">Start the demo, no sign-up</button>
+          ${inWs ? `<a class="btn pri big" href="#/home" id="go-ws">Open your workspace</a>` : `<button class="btn pri big" id="go-demo">Start the demo, no sign-up</button>`}
           <a class="btn big glass" href="#try">Check your own caption</a>
         </div>
-        <p class="hero-note">The demo opens a private sandbox for a fictional brand, ABC Electronics, with a 9-step guide. <a href="#/signin">Sign in</a> or <a href="#/signup">create a team</a>.</p>
+        <p class="hero-note">${inWs ? `You are in <b>${esc(S.me.org_name)}</b>. Your work is saved there.` : `The demo opens a private sandbox for a fictional brand, ABC Electronics, with a 9-step guide. <a href="#/signin">Sign in</a> or <a href="#/signup">create a team</a>.`}</p>
       </div>
       <figure class="proofsheet" aria-label="Example: an AI-written ad marked up by BrandProof">
         <div class="ps-head"><span>Instagram draft, written with AI</span><span class="ps-score"><b>100</b> risk</span></div>
@@ -375,10 +379,9 @@ async function landing() {
   <section class="band closing"><div class="wrap center">
     <h2>See it on a real workflow</h2>
     <p class="sub">Creator writes, Compliance clears claims, a Reviewer approves. Switch roles in one click inside the demo.</p>
-    <div class="row" style="justify-content:center;margin-top:16px"><button class="btn pri big" id="go-demo2">Start the demo</button><a class="btn big" href="https://github.com/sanjaykumarpathak640-png/brandproof-ai">Read the code</a></div>
+    <div class="row" style="justify-content:center;margin-top:16px">${inWs ? `<a class="btn pri big" href="#/home">Open your workspace</a>` : `<button class="btn pri big" id="go-demo2">Start the demo</button>`}<a class="btn big" href="https://github.com/sanjaykumarpathak640-png/brandproof-ai">Read the code</a></div>
   </div></section>`;
-  $("#go-demo").onclick = (e) => startDemo(e.currentTarget);
-  $("#go-demo2").onclick = (e) => startDemo(e.currentTarget);
+  if (!inWs) { $("#go-demo").onclick = (e) => startDemo(e.currentTarget); $("#go-demo2").onclick = (e) => startDemo(e.currentTarget); }
   $$("[data-try]").forEach((b) => (b.onclick = () => { $("#try-text").value = b.dataset.try; runTry(); }));
   $("#try-go").onclick = runTry;
   $$('a[href="#try"],a[href="#how"]').forEach((a) => (a.onclick = (e) => { e.preventDefault(); $(a.getAttribute("href")).scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }));
@@ -415,8 +418,8 @@ async function runTry() {
       <div class="row between"><b>${r.findings.length ? `${r.findings.length} issue${r.findings.length > 1 ? "s" : ""} found` : "No issues found"}</b><span class="riskchip ${lvl.toLowerCase()}">Risk ${r.risk.score} · ${esc(lvl)}</span></div>
       <div class="doc" style="margin-top:10px">${highlight(text, r.findings)}</div>
       <div class="findings" style="margin-top:12px">${r.findings.map((f) => findingCard(f)).join("") || '<div class="notice ok">This caption matches the ABC Electronics Brand Memory. In the app it would now go to a Reviewer for approval.</div>'}</div>
-      <p class="small" style="margin-top:12px">In the full product you can apply the fixes in one click, add AI review for meaning-based claims, and send it for approval. <a href="#" id="try-demo">Start the demo</a>.</p></div>`;
-    $("#try-demo").onclick = (e) => { e.preventDefault(); startDemo($("#go-demo")); };
+      <p class="small" style="margin-top:12px">In the full product you can apply the fixes in one click, add AI review for meaning-based claims, and send it for approval. <a href="#" id="try-demo">${S.me ? "Open Check" : "Start the demo"}</a>.</p></div>`;
+    $("#try-demo").onclick = (e) => { e.preventDefault(); if (S.me) location.hash = "#/check"; else startDemo($("#go-demo")); };
   });
 }
 function howSteps() {

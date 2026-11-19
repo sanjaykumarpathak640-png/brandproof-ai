@@ -330,7 +330,7 @@ function guideMark(id) {
 function renderGuide() {
   let el = $("#guide");
   const g = store.get("guide", null);
-  if (!S.me || !S.me.demo || !g) { if (el) el.remove(); document.body.classList.remove("with-guide"); return; }
+  if (!S.me || !S.me.demo || !g || isLanding()) { if (el) el.remove(); document.body.classList.remove("with-guide"); return; }
   const inSide = window.innerWidth >= 1100;
   if (g.open === undefined || (inSide && g.open === false && g.side === undefined)) g.open = window.innerWidth > 960;
   document.body.classList.toggle("with-guide", !!g.open && !inSide);
@@ -358,9 +358,9 @@ async function route() {
   $$("#nav a").forEach((a) => a.classList.toggle("on", a.dataset.r === name));
   let fn = PUBLIC[name] || PRIVATE[name] || landing;
   if (PRIVATE[name] && !S.me) { fn = landing; }
-  if (name === "" && S.me) fn = home;
   S.seq++;
   document.body.classList.remove("landing");
+  renderHeader();
   window.scrollTo(0, 0);
   try { await fn(arg); }
   catch (e) { if (e instanceof Stale) return; $("#app").innerHTML = `<div class="card empty"><b>Something went wrong.</b><br>${esc(e.message)}<br><br><button class="btn" onclick="route()">Try again</button></div>`; }

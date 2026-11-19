@@ -29,7 +29,8 @@ from . import db
 log = logging.getLogger("brandproof.ai")
 
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
-MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip()
+MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash").strip()
+_model_checked = False
 URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 AI_CATEGORIES = {"voice", "messaging", "claims", "pricing", "warranty", "specs"}
 MAX_CALLS_PER_MIN = int(os.environ.get("AI_MAX_CALLS_PER_MIN", "12"))
@@ -70,19 +71,56 @@ def redact(text: str, confidential_terms: list[str]) -> tuple[str, int]:
     return out, n
 
 
+def _post(model: str, parts: list, timeout: float):
+    return httpx.post(URL.format(model=model), params={"key": API_KEY},
+                      json={"contents": [{"role": "user", "parts": parts}],
+                            "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}},
+                      timeout=timeout)
+
+
+def _err_msg(r) -> str:
+    try:
+        msg = r.json().get("error", {}).get("message", "")
+    except Exception:  # noqa: BLE001
+        msg = r.text[:300]
+    return re.sub(r"key=[^&\s]+", "key=***", msg)
+
+
+def _version(name: str) -> tuple:
+    nums = re.findall(r"\d+(?:\.\d+)?", name)
+    return tuple(float(n) for n in nums[:2]) or (0.0,)
+
+
+def discover_model() -> str | None:
+    """Pick the newest general-purpose Flash model this key can use (used when the configured model is retired)."""
+    try:
+        r = httpx.get("https://generativelanguage.googleapis.com/v1beta/models", params={"key": API_KEY, "pageSize": 200}, timeout=20)
+        r.raise_for_status()
+        names = [m["name"].split("/", 1)[-1] for m in r.json().get("models", [])
+                 if "generateContent" in m.get("supportedGenerationMethods", [])]
+    except Exception:  # noqa: BLE001
+        return None
+    bad = ("lite", "image", "tts", "audio", "live", "embed", "thinking", "exp", "preview", "8b", "learnlm")
+    flash = [n for n in names if "flash" in n and not any(b in n for b in bad)]
+    return max(flash, key=_version) if flash else None
+
+
 def _call(parts: list, timeout: float = 40.0) -> str:
-    r = httpx.post(URL.format(model=MODEL), params={"key": API_KEY},
-                   json={"contents": [{"role": "user", "parts": parts}],
-                         "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}},
-                   timeout=timeout)
+    global MODEL, _model_checked
+    r = _post(MODEL, parts, timeout)
+    if r.status_code == 404 and not _model_checked:
+        _model_checked = True
+        msg = _err_msg(r)
+        suggested = [x.rstrip(".") for x in re.findall(r"models/(gemini-[\w.\-]*flash[\w.\-]*)", msg) if x.rstrip(".") != MODEL]
+        new = suggested[0] if suggested else discover_model()
+        if new and new != MODEL:
+            log.warning("Gemini model %s unavailable; switching to %s", MODEL, new)
+            MODEL = new
+            r = _post(MODEL, parts, timeout)
     if r.status_code == 429:
         raise RuntimeError("AI quota reached")
     if r.status_code >= 400:
-        try:
-            msg = r.json().get("error", {}).get("message", "")
-        except Exception:  # noqa: BLE001
-            msg = r.text[:200]
-        msg = re.sub(r"key=[^&\s]+", "key=***", msg)[:160]
+        msg = _err_msg(r)[:160]
         log.warning("Gemini HTTP %s: %s", r.status_code, msg)
         raise RuntimeError(f"AI service error (HTTP {r.status_code}: {msg})")
     data = r.json()

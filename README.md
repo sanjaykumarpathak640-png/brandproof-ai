@@ -43,7 +43,7 @@ Without a key every rule-based check still works, and the app says clearly which
 | Variable | Default | Purpose |
 |---|---|---|
 | `GEMINI_API_KEY` | *(empty)* | Enables the AI layer (Google Gemini). |
-| `GEMINI_MODEL` | `gemini-2.5-flash` | Model name. |
+| `GEMINI_MODEL` | `gemini-3.8-flash` | Model name. If Google retires it, the app switches to the model Google suggests or the newest available Flash model. |
 | `DATABASE_URL` | *(empty)* | `postgres://…` to use PostgreSQL. Empty → SQLite. |
 | `DB_PATH` | `data/brandproof.db` | SQLite file location. |
 | `ADMIN_TOKEN` | *(empty)* | Protects `POST /api/benchmark/run`. |

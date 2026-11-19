@@ -516,10 +516,13 @@ def benchmark():
 
 
 @app.post("/api/benchmark/run")
-def benchmark_run(x_admin_token: str | None = Header(default=None)):
-    if not ADMIN_TOKEN or x_admin_token != ADMIN_TOKEN:
-        raise HTTPException(403, "Not allowed")
+def benchmark_run(request: Request, x_admin_token: str | None = Header(default=None), x_acting_role: str | None = Header(default=None)):
+    """Server operators (X-Admin-Token) can always run it; any Brand Admin can start it, at most once per cooldown window."""
     from .benchmark_runner import run_ai_async
+    if ADMIN_TOKEN and x_admin_token == ADMIN_TOKEN:
+        return run_ai_async(force=True)
+    c = auth.context(request.cookies.get(COOKIE), x_acting_role)
+    auth.require(c, "admin")
     return run_ai_async()
 
 

@@ -273,6 +273,12 @@ def test_slow_ai_never_blocks_rule_results(C, monkeypatch):
     assert "slow" in body["ai"]["error"] and "R-PRC-01" in {f["rule_id"] for f in body["findings"]}
 
 
+def test_only_brand_admin_can_start_ai_benchmark(C):
+    assert C.post("/api/benchmark/run", headers=H("creator")).status_code == 403
+    r = C.post("/api/benchmark/run", headers=H("admin"))
+    assert r.status_code == 200 and r.json()["started"] is False  # no AI key in tests
+
+
 def test_redaction_masks_personal_and_confidential():
     out, n = ai.redact("Mail riya@abc.in or call 9876543210 about Project Falcon", ["Project Falcon"])
     assert "riya@abc.in" not in out and "9876543210" not in out and "Project Falcon" not in out and n == 3

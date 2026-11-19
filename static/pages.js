@@ -226,7 +226,11 @@ async function accuracyPage() {
       <tr><td>Rules only</td><td>${pct(ai.rules_only.precision)}</td><td>${pct(ai.rules_only.recall)}</td><td>${ai.rules_only.f1}</td><td>${ai.rules_only.false_negatives}</td><td>${ai.rules_only.false_positives}</td></tr>
       <tr><td><b>Rules + AI</b></td><td><b>${pct(ai.rules_plus_ai.precision)}</b></td><td><b>${pct(ai.rules_plus_ai.recall)}</b></td><td><b>${ai.rules_plus_ai.f1}</b></td><td>${ai.rules_plus_ai.false_negatives}</td><td>${ai.rules_plus_ai.false_positives}</td></tr></tbody></table>
       <p class="small">Meaning-based samples (AI-only): rules recall ${pct((ai.rules_only.groups.ai_only || {}).recall || 0)} → rules + AI recall <b>${pct((ai.rules_plus_ai.groups.ai_only || {}).recall || 0)}</b>.</p></div>`
-    : `<div class="card"><h3>Rules vs rules + AI</h3><p class="small muted">${d.ai_running ? "An AI benchmark run is in progress…" : "The AI comparison has not been run on this server yet."}</p></div>`;
+    : `<div class="card"><h3>Rules vs rules + AI</h3><p class="small muted">${d.ai_running
+        ? `The AI comparison is running${d.progress ? ` · ${d.progress.done} / ${d.progress.total} samples` : ""}. This page refreshes by itself.`
+        : "The AI comparison has not been run on this server yet."}</p>
+        ${!d.ai_running && d.ai_available && S.role === "admin" ? `<button class="btn" id="bench-run">Run the AI comparison (about 30 min)</button>` : ""}
+        ${!d.ai_running && S.role !== "admin" ? `<p class="small muted">A Brand Admin can start it.</p>` : ""}</div>`;
   $("#app").innerHTML = `<div class="page-h"><div><h2>Accuracy</h2><p>How often BrandProof is right, measured on a labelled set of ${r.samples} ad samples in English, Hindi and Hinglish.</p></div></div>
     <div class="grid g4">
       <div class="card kpi"><b>${r.samples}</b><span>labelled samples</span></div>
@@ -242,6 +246,13 @@ async function accuracyPage() {
       <p class="small muted" style="margin-top:0">Shown openly so you know what to expect. Most are meaning-based claims that only the AI layer can judge.</p>
       <table class="t small"><thead><tr><th>Sample</th><th>Expected</th><th>Rules found</th></tr></thead><tbody>${r.mismatches.slice(0, 40).map((m) => `<tr><td>${esc(m.text)} ${m.ai_only ? '<span class="tag ai">AI-only</span>' : ""}</td><td class="mono">${esc(m.expected.join(", ") || "—")}</td><td class="mono">${esc(m.got.join(", ") || "—")}</td></tr>`).join("")}</tbody></table></div>
     <p class="tiny muted">The samples are written by our team from templates for the fictional ABC Electronics brand, so treat these numbers as a regression check, not a general accuracy claim. Source: benchmark/samples.json in the repository.</p>`;
+  const b = $("#bench-run");
+  if (b) b.onclick = (ev) => once(ev.currentTarget, "Starting…", async () => {
+    const res = await api("/api/benchmark/run", { method: "POST" });
+    toast(res.message || `Started on ${res.subset} samples`, !res.started);
+    route();
+  });
+  if (d.ai_running) setTimeout(() => { if (location.hash.startsWith("#/accuracy")) route(); }, 15000);
 }
 
 /* ---------------------------------------------------------------- trust & feedback */

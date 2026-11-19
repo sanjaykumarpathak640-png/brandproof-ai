@@ -17,6 +17,8 @@ from . import ai, db, engine
 SAMPLES_PATH = os.path.join(os.path.dirname(__file__), "..", "benchmark", "samples.json")
 _rules_cache: dict = {}
 _running = threading.Event()
+PROGRESS = {"done": 0, "total": 0}
+COOLDOWN_HOURS = 6
 
 
 def samples() -> list[dict]:
@@ -94,12 +96,17 @@ def run_ai(delay: float = 5.5) -> dict:
     items = hard_subset(samples())
     brand = db.brand_snapshot(bench_org())
     rules_only, with_ai, errors = [], [], 0
+    PROGRESS.update(done=0, total=len(items))
     for s in items:
         rf = engine.run_rules(s["text"], brand)["findings"]
         got_rules = {f["rule_id"] for f in rf}
         info = ai.ai_review(s["text"], brand, rf)
+        if info.get("error") and "quota" not in str(info["error"]).lower():
+            time.sleep(20)  # the AI service was busy: wait and try once more
+            info = ai.ai_review(s["text"], brand, rf)
         if info.get("error"):
             errors += 1
+        PROGRESS["done"] += 1
         got_ai = got_rules | {f["rule_id"] for f in info.get("findings", [])}
         rules_only.append((s, got_rules))
         with_ai.append((s, got_ai))
@@ -116,14 +123,23 @@ def latest() -> dict:
     r = db.one("SELECT * FROM benchmark_runs WHERE mode='ai' AND status='done' ORDER BY id DESC LIMIT 1")
     running = db.one("SELECT created_at FROM benchmark_runs WHERE mode='ai' AND status='running' ORDER BY id DESC LIMIT 1")
     return {"rules_all": _rules_cache["result"], "ai_run": json.loads(r["result"]) if r else None,
-            "ai_run_at": r["finished_at"] if r else None, "ai_running": bool(running and _running.is_set())}
+            "ai_run_at": r["finished_at"] if r else None, "ai_running": bool(running and _running.is_set()),
+            "progress": dict(PROGRESS) if _running.is_set() else None, "ai_available": ai.available()}
 
 
-def run_ai_async() -> dict:
+def run_ai_async(force: bool = False) -> dict:
     if _running.is_set():
         return {"started": False, "message": "A benchmark run is already in progress."}
     if not ai.available():
         return {"started": False, "message": "No AI key configured."}
+    last = db.one("SELECT finished_at FROM benchmark_runs WHERE mode='ai' AND status='done' ORDER BY id DESC LIMIT 1")
+    if not force and last and last["finished_at"]:
+        from datetime import datetime, timedelta
+        try:
+            if datetime.fromisoformat(last["finished_at"]) > datetime.fromisoformat(db.now()) - timedelta(hours=COOLDOWN_HOURS):
+                return {"started": False, "message": f"The AI comparison ran recently. It can be re-run every {COOLDOWN_HOURS} hours."}
+        except ValueError:
+            pass
     rid = db.ex("INSERT INTO benchmark_runs(mode,status,created_at) VALUES(?,?,?)", ("ai", "running", db.now()))
     _running.set()
 

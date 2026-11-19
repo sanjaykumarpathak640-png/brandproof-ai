@@ -279,6 +279,22 @@ def test_only_brand_admin_can_start_ai_benchmark(C):
     assert r.status_code == 200 and r.json()["started"] is False  # no AI key in tests
 
 
+def test_overloaded_model_falls_back_and_breaker_skips_it(monkeypatch):
+    class R:
+        def __init__(self, code):
+            self.status_code, self.text = code, "busy"
+        def json(self):
+            return {"candidates": [{"content": {"parts": [{"text": "{}"}]}}], "error": {"message": "busy"}}
+    calls = []
+    monkeypatch.setattr(ai, "fallback_model", lambda: "backup-lite")
+    monkeypatch.setattr(ai, "_post", lambda m, p, t: calls.append(m) or R(503 if m == ai.MODEL else 200))
+    ai._BREAKER["until"] = 0
+    assert ai._call([{"text": "x"}]) == "{}" and calls == [ai.MODEL, "backup-lite"]
+    calls.clear()
+    assert ai._call([{"text": "x"}]) == "{}" and calls == ["backup-lite"]  # breaker open: main model skipped
+    ai._BREAKER["until"] = 0
+
+
 def test_redaction_masks_personal_and_confidential():
     out, n = ai.redact("Mail riya@abc.in or call 9876543210 about Project Falcon", ["Project Falcon"])
     assert "riya@abc.in" not in out and "9876543210" not in out and "Project Falcon" not in out and n == 3

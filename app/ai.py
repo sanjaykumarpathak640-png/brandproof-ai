@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+from collections import Counter
 import json
 import os
 import re
@@ -142,10 +143,33 @@ def discover_model() -> str | None:
     return max(flash, key=_version) if flash else None
 
 
+USED: Counter = Counter()          # which model actually answered (shown on the Accuracy page)
+_BREAKER = {"until": 0.0}         # after an overload, go straight to the backup model for a while
+BREAKER_SECONDS = 180
+
+
+def _ok_text(r) -> str:
+    return r.json()["candidates"][0]["content"]["parts"][0]["text"]
+
+
 def _call(parts: list, timeout: float = 40.0) -> str:
     global MODEL, _model_checked
-    r = _post(MODEL, parts, timeout)
-    if r.status_code == 404 and not _model_checked:
+    fb = None
+    if time.time() < _BREAKER["until"]:
+        fb = fallback_model()
+        if fb:
+            try:
+                r = _post(fb, parts, min(timeout, 30))
+                if r.status_code < 400:
+                    USED[fb] += 1
+                    return _ok_text(r)
+            except httpx.TimeoutException:
+                pass
+    try:
+        r = _post(MODEL, parts, timeout)
+    except httpx.TimeoutException:
+        r = None
+    if r is not None and r.status_code == 404 and not _model_checked:
         _model_checked = True
         msg = _err_msg(r)
         suggested = [x.rstrip(".") for x in re.findall(r"models/(gemini-[\w.\-]*flash[\w.\-]*)", msg) if x.rstrip(".") != MODEL]
@@ -154,19 +178,27 @@ def _call(parts: list, timeout: float = 40.0) -> str:
             log.warning("Gemini model %s unavailable; switching to %s", MODEL, new)
             MODEL = new
             r = _post(MODEL, parts, timeout)
-    if r.status_code in (500, 503):
+    if r is None or r.status_code in (500, 503):
+        _BREAKER["until"] = time.time() + BREAKER_SECONDS
         fb = fallback_model()
-        if fb:
-            log.warning("Gemini %s overloaded (HTTP %s); retrying once with %s", MODEL, r.status_code, fb)
+        why = "timed out" if r is None else f"overloaded (HTTP {r.status_code})"
+        if not fb:
+            if r is None:
+                raise httpx.TimeoutException("AI timed out")
+        else:
+            log.warning("Gemini %s %s; using backup model %s for the next %s s", MODEL, why, fb, BREAKER_SECONDS)
             r = _post(fb, parts, min(timeout, 30))
+            if r.status_code < 400:
+                USED[fb] += 1
+                return _ok_text(r)
     if r.status_code == 429:
         raise RuntimeError("AI quota reached")
     if r.status_code >= 400:
         msg = _err_msg(r)[:160]
         log.warning("Gemini HTTP %s: %s", r.status_code, msg)
         raise RuntimeError(f"AI service error (HTTP {r.status_code}: {msg})")
-    data = r.json()
-    return data["candidates"][0]["content"]["parts"][0]["text"]
+    USED[MODEL] += 1
+    return _ok_text(r)
 
 
 def _cached_json(kind: str, key_material: str, parts_fn, timeout=40.0) -> dict:
@@ -179,17 +211,7 @@ def _cached_json(kind: str, key_material: str, parts_fn, timeout=40.0) -> dict:
     if not _allow_call():
         return {"_error": "AI is busy (rate limit). Showing rule-based results only — try again in a minute."}
     try:
-        try:
-            raw = _call(parts_fn(), timeout=timeout)
-        except httpx.TimeoutException:
-            fb = fallback_model()
-            if not fb:
-                raise
-            log.warning("Gemini %s timed out; retrying once with %s", MODEL, fb)
-            r = _post(fb, parts_fn(), 25)
-            if r.status_code >= 400:
-                raise RuntimeError(f"AI service error (HTTP {r.status_code})")
-            raw = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+        raw = _call(parts_fn(), timeout=timeout)
         data = json.loads(raw)
     except RuntimeError as e:
         return {"_error": f"{e}. Showing rule-based results only."}

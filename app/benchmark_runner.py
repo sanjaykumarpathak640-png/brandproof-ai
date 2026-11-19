@@ -96,6 +96,7 @@ def run_ai(delay: float = 5.5) -> dict:
     items = hard_subset(samples())
     brand = db.brand_snapshot(bench_org())
     rules_only, with_ai, errors = [], [], 0
+    ai.USED.clear()
     PROGRESS.update(done=0, total=len(items))
     for s in items:
         rf = engine.run_rules(s["text"], brand)["findings"]
@@ -112,7 +113,7 @@ def run_ai(delay: float = 5.5) -> dict:
         with_ai.append((s, got_ai))
         if not info.get("cached"):
             time.sleep(delay)
-    return {"subset_size": len(items), "ai_errors": errors, "model": ai.model_name(),
+    return {"subset_size": len(items), "ai_errors": errors, "model": ai.model_name(), "models_used": dict(ai.USED),
             "rules_only": score(rules_only), "rules_plus_ai": score(with_ai)}
 
 

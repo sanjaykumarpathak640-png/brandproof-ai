@@ -20,9 +20,13 @@ import re
 import threading
 import time
 
+import logging
+
 import httpx
 
 from . import db
+
+log = logging.getLogger("brandproof.ai")
 
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip()
@@ -73,7 +77,14 @@ def _call(parts: list, timeout: float = 40.0) -> str:
                    timeout=timeout)
     if r.status_code == 429:
         raise RuntimeError("AI quota reached")
-    r.raise_for_status()
+    if r.status_code >= 400:
+        try:
+            msg = r.json().get("error", {}).get("message", "")
+        except Exception:  # noqa: BLE001
+            msg = r.text[:200]
+        msg = re.sub(r"key=[^&\s]+", "key=***", msg)[:160]
+        log.warning("Gemini HTTP %s: %s", r.status_code, msg)
+        raise RuntimeError(f"AI service error (HTTP {r.status_code}: {msg})")
     data = r.json()
     return data["candidates"][0]["content"]["parts"][0]["text"]
 
@@ -92,6 +103,8 @@ def _cached_json(kind: str, key_material: str, parts_fn, timeout=40.0) -> dict:
         data = json.loads(raw)
     except RuntimeError as e:
         return {"_error": f"{e}. Showing rule-based results only."}
+    except httpx.TimeoutException:
+        return {"_error": "AI took too long to answer. Showing rule-based results only."}
     except Exception as e:  # noqa: BLE001  network, timeout, bad JSON
         return {"_error": f"AI call failed ({type(e).__name__}). Showing rule-based results only."}
     if isinstance(data, list):

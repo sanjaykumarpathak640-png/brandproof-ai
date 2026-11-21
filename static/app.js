@@ -370,12 +370,14 @@ async function landing() {
   <section class="band checks">
     <div class="wrap">
       <h2>What gets checked</h2>
-      <div class="checklist">
-        <div><h3>Words</h3><p>Prices, discounts, warranty and specs against dated facts. Superlatives without proof, guarantees, banned terms, product names, pressure tactics, confidential project names, missing “T&amp;C apply”.</p></div>
-        <div><h3>Posters</h3><p>Every line of text inside the image is read and boxed, then checked by the same rules. Contrast is measured per line, the logo is matched against the approved file, and colours are compared with the palette.</p></div>
-        <div><h3>Documents</h3><p>PDF and Word brochures, with the page or paragraph of each issue. Brand books can be imported and turned into rules after an admin approves them.</p></div>
-        <div><h3>Three ways of writing</h3><p>English, Hindi and Hinglish, with numbers in digits or words: “₹7,000”, “seven thousand”, “saat hazaar”, “सात हज़ार” are all the same price.</p></div>
+      <p class="sub">Pick a kind of content to see what BrandProof marks up.</p>
+      <div class="ctabs" role="tablist" aria-label="Kinds of content">
+        <button role="tab" aria-selected="true" data-ct="words" id="ct-words">Words</button>
+        <button role="tab" aria-selected="false" data-ct="posters" id="ct-posters" tabindex="-1">Posters</button>
+        <button role="tab" aria-selected="false" data-ct="docs" id="ct-docs" tabindex="-1">Documents</button>
+        <button role="tab" aria-selected="false" data-ct="lang" id="ct-lang" tabindex="-1">Hindi &amp; Hinglish</button>
       </div>
+      <div class="cpanel" id="cpanel" role="tabpanel" aria-labelledby="ct-words"></div>
     </div>
   </section>
 
@@ -389,6 +391,22 @@ async function landing() {
   if (!inWs) { $("#go-demo").onclick = (e) => startDemo(e.currentTarget); $("#go-demo2").onclick = (e) => startDemo(e.currentTarget); }
   $$("[data-try]").forEach((b) => (b.onclick = () => { $("#try-text").value = b.dataset.try; runTry(); }));
   $("#try-go").onclick = runTry;
+  const tabs = $$("[data-ct]");
+  const show = (b) => {
+    tabs.forEach((t) => { const on = t === b; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; });
+    const p = $("#cpanel"); p.setAttribute("aria-labelledby", b.id); p.innerHTML = CPANELS[b.dataset.ct]; p.classList.remove("in"); void p.offsetWidth; p.classList.add("in");
+  };
+  tabs.forEach((b, i) => {
+    b.onclick = () => show(b);
+    b.onkeydown = (e) => { const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (d) { const n = tabs[(i + d + tabs.length) % tabs.length]; n.focus(); show(n); } };
+  });
+  show(tabs[0]);
+  const ps = $(".proofsheet");
+  if (ps && matchMedia("(hover:hover) and (prefers-reduced-motion: no-preference)").matches) {
+    const hero = $(".hero2");
+    hero.onmousemove = (e) => { const r = ps.getBoundingClientRect(); const x = (e.clientX - r.left - r.width / 2) / r.width, y = (e.clientY - r.top - r.height / 2) / r.height; ps.style.transform = `perspective(900px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) rotate(-1.2deg)`; };
+    hero.onmouseleave = () => { ps.style.transform = ""; };
+  }
   $$('a[href="#try"],a[href="#how"]').forEach((a) => (a.onclick = (e) => { e.preventDefault(); $(a.getAttribute("href")).scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }));
   try {
     const d = await api("/api/benchmark", { allow401: true });
@@ -402,6 +420,22 @@ async function landing() {
       ${a ? `<div><b>${pc(a.rules_only.recall)} → ${pc(a.rules_plus_ai.recall)}</b><span>caught on the ${a.subset_size} hardest ads when AI is added</span></div>` : ""}`;
   } catch (e) {}
 }
+const CPANELS = {
+  words: `<div class="cp-grid"><div class="cp-copy"><h3>Captions, emails and product pages</h3><p>Prices, discounts, warranty and specs are checked against dated facts. So are superlatives without proof, guarantees, banned terms, product names, pressure tactics, confidential project names and a missing “T&amp;C apply”.</p><a class="btn" href="#try">Try your own caption</a></div>
+    <div class="cp-demo doc"><p>Our <span class="hl high">best-ever<sup>1</sup></span> earbuds are back! <span class="hl high">Guaranteed<sup>2</sup></span> to last, with <span class="hl medium">Project Falcon<sup>3</sup></span> tech inside. <span class="hl review">Hurry, only today!<sup>4</sup></span></p>
+      <ul class="cp-list"><li><b>1</b> Superlative with no approved evidence</li><li><b>2</b> Absolute guarantee: not allowed</li><li><b>3</b> Confidential project name</li><li><b>4</b> Pressure tactic, check the tone rule</li></ul></div></div>`,
+  posters: `<div class="cp-grid"><div class="cp-copy"><h3>Posters and social creatives</h3><p>Every line of text inside the image is read and boxed, then checked by the same rules as typed copy. Contrast is measured per line, the logo is matched against the approved file, and colours are compared with the palette.</p>
+      <ul class="cp-list"><li><b>1</b> Headline contrast 1.5:1, needs 3:1</li><li><b>2</b> 50% off is above the 20% maximum</li><li><b>3</b> ₹7,000 is not the approved ₹10,000</li><li><b>4</b> Lifetime warranty: it is 2 years</li><li><b>!</b> Approved logo not found</li></ul></div>
+    <div class="cp-demo poster"><div class="pv"><img src="/static/samples/diwali_poster_offbrand.png" alt="Sample Diwali poster with four lines of text">
+      <i class="obox" style="top:10.5%;left:5%;height:9.5%;width:82%"><span>1</span></i><i class="obox" style="top:21.5%;left:5%;height:13%;width:53%"><span>2</span></i>
+      <i class="obox" style="top:73.5%;left:5%;height:6.5%;width:84%"><span>3</span></i><i class="obox" style="top:81.8%;left:5%;height:5.2%;width:91%"><span>4</span></i></div></div></div>`,
+  docs: `<div class="cp-grid"><div class="cp-copy"><h3>PDF and Word files</h3><p>Brochures and product sheets are read page by page, and every issue tells you the page and paragraph. Brand books can be imported too: values become rules only after a Brand Admin approves them.</p><span class="tag grey">PDF</span> <span class="tag grey">DOCX</span> <span class="tag grey">TXT</span></div>
+    <div class="cp-demo pdf"><div class="pg"><div class="pg-h">ABC_Diwali_Brochure.pdf · page 2</div><p class="ln w9"></p><p class="ln w7"></p><p>Battery that <span class="hl high">never runs out<sup>1</sup></span>, rated <span class="hl medium">IPX8<sup>2</sup></span>.</p><p class="ln w8"></p><p class="ln w5"></p></div>
+      <ul class="cp-list"><li><b>1</b> Page 2, ¶3: battery is 30 hours (Lab Test LT-22)</li><li><b>2</b> Page 2, ¶3: water rating is IPX4 (Certification IPX4-0917)</li></ul></div></div>`,
+  lang: `<div class="cp-grid"><div class="cp-copy"><h3>English, Hindi and Hinglish</h3><p>Numbers are understood however they are written, so the same price rule catches all of these. The same goes for “half price / aadhe daam”, “lifetime / aajeevan” and Hindi superlatives.</p></div>
+    <div class="cp-demo lang"><div class="lrow"><span>₹7,000</span><i>digits</i></div><div class="lrow"><span>seven thousand rupees</span><i>English words</i></div><div class="lrow"><span>saat hazaar rupaye</span><i>Hinglish</i></div><div class="lrow"><span>सात हज़ार रुपये</span><i>Hindi</i></div>
+      <div class="lres">All four read as <b>₹7,000</b>. Approved price: ₹10,000, so each one is flagged with the same fix.</div></div></div>`,
+};
 function proofMarks(text) {
   const marks = [["₹7,000", 1], ["50% OFF", 2], ["lifetime warranty", 3]];
   let out = esc(text);
@@ -483,6 +517,12 @@ async function home() {
   $("#app").innerHTML = `
   <div class="page-h"><div><h2>${esc(S.me.org_name)}</h2><p>${S.me.demo ? "Your private demo sandbox. Nothing here is shared with anyone else, and it is deleted after 48 hours of inactivity." : `Signed in as <b>${esc(S.me.user.name)}</b> · roles: ${S.me.roles.map((r) => ROLE_LABEL[r]).join(", ")}`}</p></div>
     <div class="row"><a class="btn pri" href="#/check">Check content</a><a class="btn" href="#/queue">Review queue</a></div></div>
+  <section class="qa" aria-label="Quick actions">
+    <a class="qa-t" href="#/check" data-qa="risky"><span class="qa-i"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h11M4 10h8M4 15h6"/><path d="M14 17l3 3 5-6"/></svg></span><b>Check a caption</b><span>Runs the risky AI-written ad</span></a>
+    <a class="qa-t" href="#/check" data-qa="offbrand"><span class="qa-i p"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg></span><b>Check a poster</b><span>Text in image, contrast, logo</span></a>
+    <a class="qa-t" href="#/queue"><span class="qa-i q"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg></span><b>Review queue</b><span>${$("#qcount") && !$("#qcount").hidden ? `${$("#qcount").textContent} waiting for your role` : "Everything in review"}</span></a>
+    <a class="qa-t" href="#/brand"><span class="qa-i b"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span><b>Brand Memory</b><span>Facts, rules, logo, impact preview</span></a>
+  </section>
   ${blank ? `<div class="card stack"><h3>👋 Get started in 3 steps</h3>
       <div class="steps"><div class="step"><span class="n">1</span><b>Set up Brand Memory</b><span class="muted small">Import your brand book (PDF/DOCX) or add prices, terms, logo and palette.</span><a class="btn sm" href="#/brand" style="margin-top:6px">Open Brand Memory</a></div>
       <div class="step"><span class="n">2</span><b>Invite your team</b><span class="muted small">Add Creators, Compliance and Reviewers with an invite link.</span><a class="btn sm" href="#/team" style="margin-top:6px">Invite people</a></div>
@@ -494,6 +534,7 @@ async function home() {
     <div class="card kpi"><b>${ins.guideline_health.filter((h) => h.status === "unclear").length}</b><span>guideline(s) flagged as unclear</span></div>
   </section>${ins.has_demo ? '<p class="tiny muted">Numbers include the sample review history that comes with the demo.</p>' : ""}` : ""}
   ${howItWorks()}`;
+  $$("[data-qa]").forEach((a) => (a.onclick = (e) => { e.preventDefault(); bpRun("#/check", a.dataset.qa === "offbrand" ? '[data-img="offbrand"]' : '[data-s="risky"]'); }));
 }
 function authShell(title, sub, body) {
   $("#app").innerHTML = `<div class="authbox card stack"><h2>${title}</h2><p class="muted" style="margin:0">${sub}</p>${body}</div>`;
@@ -561,11 +602,11 @@ async function check(sample) {
   const canSubmit = S.me.roles.includes("creator");
   $("#app").innerHTML = `
   <div class="page-h"><div><h2>Check content</h2><p>Paste a draft, or upload a PDF, DOCX or poster. BrandProof checks it against Brand Memory v${S.me.brand_version} before anyone publishes.</p></div></div>
-  <div class="card samples"><span class="small muted">Try a sample →</span>
-      <span class="small"><b>Text:</b></span><button class="btn sm" data-s="risky">Risky AI ad</button><button class="btn sm" data-s="hinglish">Hinglish</button><button class="btn sm" data-s="hindi">हिंदी</button>
-      <button class="btn sm" data-s="outdated">Outdated facts</button><button class="btn sm" data-s="confidential">Confidential leak</button><button class="btn sm" data-s="clean">Clean copy</button>
-      <span class="small"><b>Poster:</b></span>${Object.entries(SAMPLE_IMAGES).map(([k, v]) => `<button class="btn sm" data-img="${k}">${esc(v.label)}</button>`).join("")}
-      <span class="small"><b>File:</b></span><button class="btn sm" data-pdf="1">Brochure PDF</button></div>
+  <div class="card samples"><span class="sg-l">Try a sample</span>
+      <span class="sg"><span class="sg-h">Text</span><button class="btn sm chip t" data-s="risky">Risky AI ad</button><button class="btn sm chip t" data-s="hinglish">Hinglish</button><button class="btn sm chip t" data-s="hindi">हिंदी</button>
+      <button class="btn sm chip t" data-s="outdated">Outdated facts</button><button class="btn sm chip t" data-s="confidential">Confidential leak</button><button class="btn sm chip t" data-s="clean">Clean copy</button></span>
+      <span class="sg"><span class="sg-h">Poster</span>${Object.entries(SAMPLE_IMAGES).map(([k, v]) => `<button class="btn sm chip p" data-img="${k}">${esc(v.label)}</button>`).join("")}</span>
+      <span class="sg"><span class="sg-h">File</span><button class="btn sm chip f" data-pdf="1">Brochure PDF</button></span></div>
   <div class="split">
     <div class="stack">
       <div class="card stack">
@@ -576,7 +617,7 @@ async function check(sample) {
         <div><label class="f" for="c-goal">Creator's goal <span class="muted">(Purpose Guard keeps this intact)</span></label><input class="inp" id="c-goal" maxlength="200" value="${esc(st.goal)}" placeholder="e.g. Promote the Diwali offer and drive purchases"></div>
         <div><label class="f" for="c-text">Content <span class="muted">(English, Hindi or Hinglish)</span></label><textarea class="inp" id="c-text" maxlength="20000" placeholder="Paste caption, ad copy, email or page text…">${esc(st.text)}</textarea>
           <div class="tiny muted" id="c-count" style="text-align:right">${st.text.length}/20000</div></div>
-        <div class="drop" id="c-drop" tabindex="0">📎 Drop a <b>PDF, DOCX, TXT</b> or a <b>poster (PNG/JPG)</b> here, or <a href="#" id="c-browse">browse</a><input type="file" id="c-file" hidden accept=".pdf,.docx,.txt,.md,.png,.jpg,.jpeg,.webp"><div id="c-fileinfo" class="small" style="margin-top:6px">${st.image ? "🖼️ Image attached." : ""}</div></div>
+        <div class="drop" id="c-drop" tabindex="0"><svg class="ic dz" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5"/><path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg><span>Drop a <b>PDF, DOCX, TXT</b> or a <b>poster (PNG/JPG)</b> here, or <a href="#" id="c-browse">browse</a></span><input type="file" id="c-file" hidden accept=".pdf,.docx,.txt,.md,.png,.jpg,.jpeg,.webp"><div id="c-fileinfo" class="small" style="margin-top:6px">${st.image ? "🖼️ Image attached." : ""}</div></div>
         <div id="c-imgbox" ${st.image ? "" : "hidden"}><label class="f" for="c-alt">Image alt text</label><input class="inp" id="c-alt" maxlength="300" value="${esc(st.alt)}" placeholder="Describe the image for screen-reader users"></div>
         <div class="grid g2" style="gap:8px">
           <label class="chk"><input type="checkbox" id="c-ai" ${st.ai ? "checked" : ""}> Draft was written with an AI tool (recorded on the certificate)</label>

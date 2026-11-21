@@ -513,3 +513,95 @@ tr.click:focus{outline:2px solid #6d5ef5;outline-offset:-2px}
 @keyframes shim{to{background-position:-200% 0}}
 
 @media(prefers-reduced-motion:reduce){#app>*,.bar .t i,.bars .t i,.cmdk,.cmdk-box,.skel i{animation:none}}
+
+/* ================= v7: designer pass ================= */
+/* buttons */
+.btn{font-weight:600;border:1px solid #dfe1ea;background:#fff;box-shadow:0 1px 2px rgba(23,25,58,.06);position:relative;overflow:hidden}
+.btn:hover:not(:disabled){border-color:#c9ccdb;box-shadow:0 2px 8px rgba(23,25,58,.08)}
+.btn.pri{background:linear-gradient(135deg,#4f46e5 0%,#6d5ef5 55%,#7c6cf7 100%);border-color:transparent;color:#fff}
+.btn.pri:after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);transform:translateX(-120%);transition:transform .6s}
+.btn.pri:hover:not(:disabled):after{transform:translateX(120%)}
+.btn.ok{background:linear-gradient(135deg,#0f9d6e,#14b884);border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(15,157,110,.25)}
+.btn.bad{background:#fff;color:var(--high);border-color:#f2c4bf}
+.btn.bad:hover:not(:disabled){background:var(--highSoft)}
+.btn.ghost{background:transparent;border-color:transparent;box-shadow:none}
+.btn.big{padding:14px 22px;font-size:16px;border-radius:12px}
+.top .btn,.band.numbers .btn.glass,.hero2 .btn.glass{box-shadow:none}
+.hero2 .btn.glass,.band.numbers .btn.glass{background:transparent;border-color:#ffffff40;color:#fff}
+.hero2 .btn.glass:hover,.band.numbers .btn.glass:hover{background:#ffffff14;border-color:#ffffff70}
+
+/* check page sample chips */
+.samples{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:14px 16px}
+.sg-l{font-weight:700;font-size:13px;color:var(--ink)}
+.sg{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;padding-left:14px;border-left:1px solid var(--line)}
+.sg-h{font-size:12px;color:var(--muted);font-weight:600;margin-right:2px}
+.btn.chip{border-radius:20px;padding:5px 12px 5px 10px;font-weight:500;font-size:13px}
+.btn.chip:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px;background:#6d5ef5}
+.btn.chip.p:before{background:#e59a14}.btn.chip.f:before{background:#0f9d6e}
+.btn.chip:hover:not(:disabled){transform:translateY(-1px);border-color:#b9b4f7;background:#fbfaff}
+
+/* drop zone */
+.drop{display:flex;align-items:center;justify-content:center;gap:12px;padding:20px 14px;border:1.5px dashed #c9cbe0;border-radius:14px;background:linear-gradient(180deg,#fbfbff,#f5f6fd);transition:border-color .15s,background .15s,transform .15s;flex-wrap:wrap}
+.drop .dz{width:30px;height:30px;padding:6px;border-radius:9px;background:#eef0ff;color:var(--brand);stroke-width:2;box-sizing:content-box}
+.drop:hover{border-color:#a5a0f0}
+.drop.over{border-color:var(--brand);background:#eef0ff;transform:scale(1.01)}
+
+/* dashboard quick actions */
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.qa-t{display:flex;flex-direction:column;gap:3px;padding:18px;border-radius:16px;background:#fff;border:1px solid var(--line);text-decoration:none;color:var(--ink);box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s,border-color .18s;position:relative}
+.qa-t:after{content:"→";position:absolute;right:16px;top:18px;color:var(--brand);opacity:0;transform:translateX(-6px);transition:opacity .18s,transform .18s}
+.qa-t:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(23,25,58,.10);border-color:#cfcdf6}
+.qa-t:hover:after{opacity:1;transform:none}
+.qa-t b{font-family:var(--display);font-size:16.5px;margin-top:10px}
+.qa-t>span:last-child{font-size:13px;color:var(--muted)}
+.qa-i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#eef0ff;color:#4338ca}
+.qa-i.p{background:#fff4e0;color:#b45309}.qa-i.q{background:#e6f6ef;color:#0b7d57}.qa-i.b{background:#e8e9f3;color:#17193a}
+.qa-i .ic{width:21px;height:21px;stroke-width:1.9}
+@media(max-width:900px){.qa{grid-template-columns:1fr 1fr}}
+
+/* landing: aurora glow behind the hero (static) */
+.hero2:before{content:"";position:absolute;inset:-20% -10% auto auto;width:70%;height:120%;background:radial-gradient(closest-side,rgba(109,94,245,.35),transparent 70%);pointer-events:none}
+.hero2:after{content:"";position:absolute;left:-15%;bottom:-40%;width:60%;height:90%;background:radial-gradient(closest-side,rgba(63,216,164,.16),transparent 70%);pointer-events:none}
+.hero2-in{position:relative;z-index:1}
+.proofsheet{transition:transform .25s ease-out;will-change:transform}
+
+/* landing: content tabs */
+.ctabs{display:inline-flex;gap:4px;padding:5px;background:#eef0f7;border-radius:14px;margin:28px 0 18px;flex-wrap:wrap}
+.ctabs button{font:inherit;font-weight:600;font-size:15px;border:0;background:transparent;color:var(--ink2);padding:10px 18px;border-radius:10px;cursor:pointer;transition:background .15s,color .15s,box-shadow .15s}
+.ctabs button:hover{color:var(--ink)}
+.ctabs button[aria-selected="true"]{background:#fff;color:var(--brand);box-shadow:0 2px 8px rgba(23,25,58,.10)}
+.cpanel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--shadow);min-height:330px}
+.cpanel.in{animation:pageIn .3s cubic-bezier(.2,.8,.2,1)}
+.cp-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:36px;align-items:center}
+.cp-copy h3{font-size:24px;margin:0 0 10px}
+.cp-copy p{color:var(--ink2);line-height:1.65;margin:0 0 16px}
+.cp-demo{background:#f7f8fb;border:1px solid var(--line);border-radius:14px;padding:20px}
+.cp-demo.doc p,.cp-demo.pdf p{font-size:16px;line-height:1.9;margin:0}
+.cp-list{list-style:none;padding:12px 0 0;margin:14px 0 0;border-top:1px dashed #d9dbe6;font-size:14px;color:var(--ink2)}
+.cp-list li{padding:3px 0}.cp-list b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;margin-right:8px}
+.cp-demo.poster{padding:14px;display:flex;justify-content:center;background:#1c1e3f}
+.pv{position:relative;width:min(300px,100%)}
+.pv img{width:100%;display:block;border-radius:6px}
+.pv .obox{position:absolute;border:2px solid #ff5a4a;border-radius:4px;background:rgba(255,90,74,.08)}
+.pv .obox span{position:absolute;left:-2px;top:-19px;background:#ff5a4a;color:#fff;font:600 10.5px var(--display);padding:1px 6px;border-radius:4px 4px 4px 0;white-space:nowrap;font-style:normal}
+.cp-demo.pdf .pg{background:#fff;border-radius:6px;padding:18px 20px;box-shadow:0 6px 18px rgba(23,25,58,.08)}
+.pg-h{font-size:12px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+.ln{height:9px;border-radius:5px;background:#eceef4;margin:9px 0 !important}.ln.w9{width:90%}.ln.w8{width:80%}.ln.w7{width:70%}.ln.w5{width:50%}
+.cp-demo.lang{display:grid;gap:8px}
+.lrow{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 14px}
+.lrow span{font-size:17px;font-weight:600;text-decoration:underline wavy var(--high);text-underline-offset:5px}
+.lrow i{font-style:normal;font-size:12px;color:var(--muted)}
+.lres{margin-top:6px;font-size:14px;color:var(--ink2);background:var(--proofSoft);border-radius:10px;padding:10px 14px}
+@media(max-width:860px){.cp-grid{grid-template-columns:1fr}.cpanel{padding:20px}}
+
+/* sidebar: active item glow */
+@media(min-width:1100px){body.app-mode .top nav.main a.on{background:linear-gradient(90deg,rgba(109,94,245,.35),rgba(109,94,245,.08))}}
+
+/* main background: very faint grid paper, ties to the proof-sheet idea */
+body.app-mode{background-color:var(--bg);background-image:linear-gradient(#17193a06 1px,transparent 1px),linear-gradient(90deg,#17193a06 1px,transparent 1px);background-size:28px 28px}
+@media(prefers-reduced-motion:reduce){.cpanel.in{animation:none}.btn.pri:after{display:none}.proofsheet{transition:none}}
+.pv{width:min(360px,100%)}
+.pv .obox span{left:auto;right:-11px;top:50%;transform:translateY(-50%);width:20px;height:20px;padding:0;border-radius:50%;display:grid;place-items:center;font-size:11px;box-shadow:0 0 0 2px #fff}
+.cp-list b{min-width:18px}
+.pv .obox span{right:auto;left:-12px}
+.pv .obox span{left:-25px}

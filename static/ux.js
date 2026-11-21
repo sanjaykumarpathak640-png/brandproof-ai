@@ -131,6 +131,7 @@
     pal.onclick = (e) => { const li = e.target.closest("li[data-i]"); if (li) { const a = list[+li.dataset.i]; close(); a.run(); } else if (e.target === pal) close(); };
   }
   window.openPalette = open;
+  window.bpRun = waitClick;
   document.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); open(); }
     else if (e.key === "Escape" && pal) close();

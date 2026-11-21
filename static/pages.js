@@ -154,7 +154,7 @@ async function certPage() {
       <div class="card"><h3>Is this the approved text?</h3><textarea class="inp" id="v-text" style="min-height:70px" maxlength="20000" placeholder="Paste the exact text that is about to be published…"></textarea>
         <div class="row" style="margin-top:8px"><button class="btn pri" id="v-go">Verify</button><span id="v-out" class="small" role="status"></span></div></div>
     </div>
-    <div class="stack">${list.map((c, i) => certCard(c, true) + (i < list.length - 1 ? '<div class="chainlink">⛓ chained</div>' : "")).join("") || '<div class="card empty">No certificates yet. Approve something in the <a href="#/queue">Review queue</a>.</div>'}</div>`;
+    <div class="stack">${list.map((c, i) => certCard(c, true) + (i < list.length - 1 ? '<div class="chainlink"><span>linked by hash</span></div>' : "")).join("") || '<div class="card empty">No certificates yet. Approve something in the <a href="#/queue">Review queue</a>.</div>'}</div>`;
   $("#v-go").onclick = (e) => {
     const t = $("#v-text").value; if (!t.trim()) return toast("Paste some text first", true);
     once(e.currentTarget, "Checking…", async () => {
@@ -170,7 +170,7 @@ async function teamPage() {
   if (t.demo) {
     $("#app").innerHTML = `<div class="page-h"><div><h2>Team</h2><p>Who can do what in this workspace.</p></div></div>
       <div class="card stack"><div class="notice">This is a <b>demo sandbox</b>: the four demo people below are role personas you can switch between with “Acting as”. In a real team workspace every person signs in with their own account, holds only the roles an admin gives them, and their verified identity is recorded on each Proof Certificate.</div>
-      <table class="t"><thead><tr><th>Person</th><th>Role</th></tr></thead><tbody>${t.members.map((m) => `<tr><td>${esc(m.name)}</td><td>${m.roles.map((r) => `<span class="tag grey">${ROLE_LABEL[r]}</span>`).join(" ")}</td></tr>`).join("")}</tbody></table>
+      <table class="t"><thead><tr><th>Person</th><th>Role</th></tr></thead><tbody>${t.members.map((m) => `<tr><td><span class="who">${avatar(m.name, m.roles[0])}<b>${esc(m.name)}</b></span></td><td>${m.roles.map((r) => `<span class="rtag ${r}">${ROLE_LABEL[r]}</span>`).join(" ")}</td></tr>`).join("")}</tbody></table>
       <div class="row"><a class="btn pri" href="#/signup">Create a real team workspace</a><span class="small muted">Free · invite teammates by link · data kept in your own workspace</span></div></div>`;
     guideMark("team");
     return;
@@ -180,7 +180,7 @@ async function teamPage() {
   $("#app").innerHTML = `<div class="page-h"><div><h2>Team · ${esc(S.me.org_name)}</h2><p>${t.members.length} member(s). Roles decide who can submit, clear claims, approve and edit Brand Memory.</p></div></div>
     <div class="grid g2">
       <div class="card"><h3>Members</h3><table class="t"><thead><tr><th>Name</th><th>Roles</th>${admin ? "<th></th>" : ""}</tr></thead><tbody>
-        ${t.members.map((m) => `<tr><td><b>${esc(m.name)}</b><div class="tiny muted">${esc(m.email)}${m.user_id === S.me.user.id ? " · you" : ""}</div></td>
+        ${t.members.map((m) => `<tr><td><span class="who">${avatar(m.name, m.roles[0])}<span><b>${esc(m.name)}</b><div class="tiny muted">${esc(m.email)}${m.user_id === S.me.user.id ? " · you" : ""}</div></span></span></td>
           <td>${admin ? Object.keys(ROLE_LABEL).map((r) => `<label class="chk inline"><input type="checkbox" data-mrole="${m.user_id}" value="${r}" ${m.roles.includes(r) ? "checked" : ""}> ${ROLE_LABEL[r]}</label>`).join(" ") : m.roles.map((r) => `<span class="tag grey">${ROLE_LABEL[r]}</span>`).join(" ")}</td>
           ${admin ? `<td>${m.user_id !== S.me.user.id ? `<button class="btn sm bad" data-rm="${m.user_id}">Remove</button>` : ""}</td>` : ""}</tr>`).join("")}</tbody></table>
         ${admin ? '<button class="btn sm" id="m-save" style="margin-top:8px">Save role changes</button>' : ""}</div>
@@ -362,8 +362,11 @@ async function route() {
   document.body.classList.remove("landing");
   renderHeader();
   window.scrollTo(0, 0);
+  const seq = S.seq, app = $("#app"), before = app.firstElementChild;
+  const sk = setTimeout(() => { if (S.seq === seq && fn !== landing && app.firstElementChild === before) app.innerHTML = `<div class="skel" aria-busy="true" aria-label="Loading"><i class="h"></i><i class="p"></i><div class="sk-row"><i></i><i></i><i></i><i></i></div><i class="blk"></i></div>`; }, 220);
   try { await fn(arg); }
-  catch (e) { if (e instanceof Stale) return; $("#app").innerHTML = `<div class="card empty"><b>Something went wrong.</b><br>${esc(e.message)}<br><br><button class="btn" onclick="route()">Try again</button></div>`; }
+  catch (e) { clearTimeout(sk); if (e instanceof Stale) return; $("#app").innerHTML = `<div class="card empty"><b>Something went wrong.</b><br>${esc(e.message)}<br><br><button class="btn" onclick="route()">Try again</button></div>`; }
+  clearTimeout(sk);
   renderGuide();
 }
 window.addEventListener("hashchange", route);

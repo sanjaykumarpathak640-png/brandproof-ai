@@ -3,6 +3,10 @@
    pages.js: Brand Memory, Insights, Certificates, Team, Accuracy, Trust, demo guide, router start. */
 "use strict";
 
+function avatar(name, role) {
+  const ini = String(name || "?").replace(/\(.*?\)/g, "").trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  return `<span class="av ${role || ""}" aria-hidden="true">${esc(ini)}</span>`;
+}
 const ROLE_LABEL = { creator: "Creator", compliance: "Compliance", reviewer: "Reviewer", admin: "Brand Admin" };
 const DEMO_PEOPLE = { creator: "Riya Sharma", compliance: "Neha Verma", reviewer: "Kabir Singh", admin: "Ayush (Brand Admin)" };
 const STATUS_LABEL = { draft: "Draft", compliance_review: "Waiting for Compliance", in_review: "Waiting for Reviewer", approved: "Approved", rejected: "Rejected", changes_requested: "Changes requested" };
@@ -268,6 +272,7 @@ function renderHeader() {
   document.body.classList.toggle("app-mode", !!me && !isLanding());
   $("#pubnav").hidden = !!me && !isLanding();
   $("#nav").hidden = !me || isLanding();
+  $("#cmdk-btn").hidden = !me || isLanding();
   $("#ws").hidden = isLanding();
   $("#ws").innerHTML = me ? `<span class="wsname" title="Workspace">${esc(me.org_name)}</span>${me.demo ? '<span class="tag demo">demo sandbox</span>' : '<span class="tag ok">team</span>'}` : "";
   const rb = $("#rolebox");

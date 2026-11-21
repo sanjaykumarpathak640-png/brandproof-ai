@@ -22,6 +22,7 @@
 
 **Reliability & usability**
 - Idempotent submit/approve/clear/dismiss (409 on repeats); input limits; friendly errors for every failure; request timeouts; “waking up the server” message; state kept across refresh; empty states; keyboard focus styles; guided demo.
+- Polish (v3.2): page icons, count-up stats, animated risk ring, hovering a highlight lights its finding (and back), clickable queue rows, certificate-style cards linked by hash, team avatars, loading skeletons, and a Ctrl/Cmd+K command palette to jump to any page, run a sample or switch role. No workflow changed.
 - New look (v3.1): dark sidebar app layout with icons, judge path inside the sidebar, new landing page (live proof-marked example, "Try a caption" with no sign-up, How it works, what gets checked, live benchmark numbers) and a "How it works" page for new users and judges. No workflow changed.
 - Faster, sturdier AI: one combined vision call per poster; text and image AI run in parallel; a backup Flash model answers when the main model is overloaded or times out (and is used directly for 3 minutes after an overload); rule results are never held back more than ~25 s by a slow AI service (the AI finishes in the background and is cached for the next run).
 - AI-assisted free-form brand-book import (values verified against the document).
